@@ -6,6 +6,17 @@ describe("Applicants Service", function () {
   const first_name = "John";
   const last_name = "Valerio";
   const phone_number = "9999999999";
+
+  const expectedSuccesfullResult = {
+    message: "Applicant created succesfully!",
+    applicant: {
+      email: email,
+      first_name: first_name,
+      last_name: last_name,
+      phone_number: phone_number,
+      created_at: Math.floor(Date.now() / 1000),
+    },
+  };
   test("Creates an applicant with an email, first_name, last_name and phone_number", () => {
     expect(
       createApplicant({
@@ -14,16 +25,7 @@ describe("Applicants Service", function () {
         last_name: last_name,
         phone_number: phone_number,
       })
-    ).toStrictEqual({
-      message: "Applicant created succesfully!",
-      applicant: {
-        email: email,
-        first_name: first_name,
-        last_name: last_name,
-        phone_number: phone_number,
-        created_at: Math.floor(Date.now() / 1000),
-      },
-    });
+    ).toMatchObject(expectedSuccesfullResult);
   });
 
   test("if email is blank", () => {
