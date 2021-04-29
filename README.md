@@ -2,7 +2,7 @@
 
 [Website](https://openats.app) (Not live yet)
 
-[Roadmap](https://trello.com/b/iBMcfzJS/openats-kanban) - PR / [Email](mailto:contact@josevalerio.com) for edit access
+[Roadmap](https://trello.com/b/iBMcfzJS/openats-kanban)
 
 ### _High volume applicant tracking system_
 
