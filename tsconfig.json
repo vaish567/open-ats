@@ -1,15 +1,14 @@
 {
     "compilerOptions": {
       "target": "ES5",
-      "module": "commonjs",
       "strict": true,
+      "module": "CommonJS",
       "watch": true,
       "esModuleInterop": true,
       "skipLibCheck": true,
+      "moduleResolution": "node",
       "forceConsistentCasingInFileNames": true
     },
-    "$schema": "https://json.schemastore.org/tsconfig",
-    "display": "Recommended"
 }
 
 
