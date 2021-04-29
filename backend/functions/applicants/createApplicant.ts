@@ -32,13 +32,14 @@ const ApplicantSchema = Joi.object({
     }),
 });
 interface Applicant {
+  /** The email of the applicant */
   email: string;
   first_name: string;
   last_name: string;
-  phone_number: number;
+  phone_number: string;
 }
 
-const createApplicant = (applicant: Applicant) => {
+const createApplicant = (applicant: Applicant): object => {
   const validation = ApplicantSchema.validate(applicant);
   if (validation.error) {
     return { message: validation.error?.message };
