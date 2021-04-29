@@ -1,5 +1,7 @@
+const {
+  createApplicant,
+} = require("../functions/applicants/createApplicant.js");
 describe("Applicants Service Test Suite", function () {
-  const createApplicant = require("../functions/applicants/createApplicant");
   const email = "johnsmith@email.com";
   const first_name = "John";
   const last_name = "Valerio";
