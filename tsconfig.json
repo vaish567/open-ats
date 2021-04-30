@@ -4,11 +4,15 @@
       "strict": true,
       "module": "CommonJS",
       "watch": true,
-      "esModuleInterop": true,
+      // "sourceMap": true,
+      "rootDir": "./",
+      //  "checkJs": true,
+      // "esModuleInterop": true,
       "skipLibCheck": true,
       "moduleResolution": "node",
       "forceConsistentCasingInFileNames": true
     },
-}
+    "compileOnSave": true,
 
+}
 
