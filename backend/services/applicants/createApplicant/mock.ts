@@ -9,5 +9,4 @@ let x = createApplicant({
 
 let f = "80a8dce8-d32b-4982-99e6-5677baf451dd";
 
-f;
 console.log(x);
