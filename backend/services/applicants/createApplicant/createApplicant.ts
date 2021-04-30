@@ -1,5 +1,7 @@
 import Joi = require("joi");
+import { nanoid } from "nanoid";
 
+const uuidLength = 50;
 const ApplicantSchema = Joi.object({
   email: Joi.string().email().required(),
   first_name: Joi.string().required().max(50),
@@ -49,6 +51,7 @@ const createApplicant = (applicant: Applicant): object => {
       email: email,
       first_name: first_name,
       last_name: last_name,
+      id: nanoid(uuidLength),
       phone_number: phone_number,
       funnel: funnel ? funnel : null,
       stage: stage ? stage : null,

@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createApplicant = void 0;
 var Joi = require("joi");
+var nanoid_1 = require("nanoid");
+var uuidLength = 50;
 var ApplicantSchema = Joi.object({
     email: Joi.string().email().required(),
     first_name: Joi.string().required().max(50),
@@ -34,6 +36,7 @@ var createApplicant = function (applicant) {
             email: email,
             first_name: first_name,
             last_name: last_name,
+            id: nanoid_1.nanoid(uuidLength),
             phone_number: phone_number,
             funnel: funnel ? funnel : null,
             stage: stage ? stage : null,
