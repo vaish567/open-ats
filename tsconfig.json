@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+      "target": "ES5",
+      "strict": true,
+      "module": "CommonJS",
+      "watch": true,
+      // "sourceMap": true,
+      "rootDir": "./",
+      //  "checkJs": true,
+      // "esModuleInterop": true,
+      "skipLibCheck": true,
+      "moduleResolution": "node",
+      "forceConsistentCasingInFileNames": true
+    },
+    "compileOnSave": true,
+
+}
+
