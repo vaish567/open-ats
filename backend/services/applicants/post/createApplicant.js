@@ -10,6 +10,8 @@ var ApplicantSchema = Joi.object({
         .length(10)
         .pattern(/^[0-9]+$/)
         .required(),
+    funnel: Joi.string(),
+    stage: Joi.string(),
 }).and("email", "first_name", "last_name", "phone_number");
 var createApplicant = function (applicant) {
     var validation = ApplicantSchema.validate(applicant, {
@@ -25,7 +27,7 @@ var createApplicant = function (applicant) {
             message: "ERROR: " + validation.error.message,
         };
     }
-    var email = applicant.email, first_name = applicant.first_name, last_name = applicant.last_name, phone_number = applicant.phone_number;
+    var email = applicant.email, first_name = applicant.first_name, last_name = applicant.last_name, phone_number = applicant.phone_number, funnel = applicant.funnel, stage = applicant.stage;
     return {
         message: "Applicant created succesfully!",
         applicant: {
@@ -33,6 +35,8 @@ var createApplicant = function (applicant) {
             first_name: first_name,
             last_name: last_name,
             phone_number: phone_number,
+            funnel: funnel ? funnel : null,
+            stage: stage ? stage : null,
             created_at: Math.floor(Date.now() / 1000),
         },
     };
