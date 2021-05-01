@@ -7,5 +7,4 @@ var x = createApplicant_1.createApplicant({
     first_name: "Jose",
     last_name: "Valerio",
 });
-var f = "80a8dce8-d32b-4982-99e6-5677baf451dd";
 console.log(x);

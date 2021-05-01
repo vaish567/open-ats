@@ -1,7 +1,8 @@
-import Joi = require("joi");
+// import Joi = require("joi");
 import { nanoid } from "nanoid";
+import * as Joi from "joi";
 
-const uuidLength = 50;
+const idLength = 20;
 const ApplicantSchema = Joi.object({
   email: Joi.string().email().required(),
   first_name: Joi.string().required().max(50),
@@ -19,8 +20,9 @@ interface Applicant {
   first_name: string;
   last_name: string;
   phone_number: string;
-  funnel?: string;
+  job?: string;
   stage?: string;
+  location?: string;
 }
 
 const createApplicant = (applicant: Applicant): object => {
@@ -42,8 +44,9 @@ const createApplicant = (applicant: Applicant): object => {
     first_name,
     last_name,
     phone_number,
-    funnel,
+    job,
     stage,
+    location,
   } = applicant;
   return {
     message: "Applicant created succesfully!",
@@ -51,11 +54,12 @@ const createApplicant = (applicant: Applicant): object => {
       email: email,
       first_name: first_name,
       last_name: last_name,
-      id: nanoid(uuidLength),
+      id: nanoid(idLength),
       phone_number: phone_number,
-      funnel: funnel ? funnel : null,
+      job: job ? job : null,
       stage: stage ? stage : null,
-      created_at: Math.floor(Date.now() / 1000),
+      location: location ? location : null,
+      created_at: new Date().toISOString(),
     },
   };
 };
