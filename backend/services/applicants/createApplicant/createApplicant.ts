@@ -26,6 +26,11 @@ interface Applicant {
 }
 
 const createApplicant = (applicant: Applicant): object => {
+  if (!applicant)
+    return {
+      message: `ERROR: 'applicant' not provided - Received ${applicant}`,
+    };
+
   const validation = ApplicantSchema.validate(applicant, {
     abortEarly: false,
     errors: {

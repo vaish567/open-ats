@@ -2,15 +2,18 @@ import * as Joi from "joi";
 const idLength = 20;
 
 const deleteApplicant = (id: string) => {
-  if (!id) return { message: `ERROR: 'id' not provided - Received: ${id}` }; // Check for falsy values
+  if (!id) return { message: `ERROR: 'id' not provided - Received ${id}` };
   const validation = Joi.string()
     .required()
     .length(idLength)
-    .messages({
-      "string.base": `'id' is not a string - Received: ${typeof id}`,
-      "string.length": `'id' length is not ${idLength} - Received length: ${id.length}`,
-    })
-    .validate(id);
+    .validate(id, {
+      abortEarly: false,
+      errors: {
+        wrap: {
+          label: "''",
+        },
+      },
+    });
 
   if (validation.error) {
     return {

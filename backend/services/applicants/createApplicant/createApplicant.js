@@ -17,6 +17,10 @@ var ApplicantSchema = Joi.object({
     stage: Joi.string(),
 }).and("email", "first_name", "last_name", "phone_number");
 var createApplicant = function (applicant) {
+    if (!applicant)
+        return {
+            message: "ERROR: 'applicant' not provided - Received " + applicant,
+        };
     var validation = ApplicantSchema.validate(applicant, {
         abortEarly: false,
         errors: {

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var deleteApplicant_1 = require("./deleteApplicant");
 // Succesfull
-console.log("Succesful:");
+console.log("Success:");
 console.log(deleteApplicant_1.deleteApplicant("11122233341112223334"));
 // Failures
 console.log("\nFailures:");
