@@ -20,4 +20,4 @@ const failStates = [
   },
 ];
 
-failStates.forEach((state) => console.log(createApplicant(state)));
+failStates.forEach((state: any) => console.log(createApplicant(state)));
