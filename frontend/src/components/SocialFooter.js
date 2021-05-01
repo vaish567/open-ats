@@ -29,7 +29,7 @@ export default function Example() {
       <div className="max-w-7xl  mx-auto py-12 px-4 sm:px-6  md:items-center md:justify-between lg:justify-center lg:px-8">
         <div className="m-4 md:mt-0 md:order-1 ">
           <p className="text-center text-base text-gray-400 ">
-            &copy; Made with ❤️ by Jose Valerio in NYC
+            Made with ❤️ by Jose Valerio in NYC
           </p>
         </div>
         <div className="flex justify-center  space-x-6 md:order-2">

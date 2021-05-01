@@ -1,6 +1,6 @@
 # OpenATS
 
-[Website](https://openats.app) (Not live yet)
+[Website](https://openats.app)
 
 [Roadmap](https://trello.com/b/iBMcfzJS/openats-kanban)
 
