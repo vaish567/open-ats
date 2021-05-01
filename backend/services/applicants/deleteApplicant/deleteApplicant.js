@@ -5,7 +5,7 @@ var Joi = require("joi");
 var idLength = 20;
 var deleteApplicant = function (id) {
     if (!id)
-        return { message: "ERROR: 'id' not provided - Received " + id };
+        return { message: "ERROR: 'id' is required" };
     var validation = Joi.string()
         .required()
         .length(idLength)
