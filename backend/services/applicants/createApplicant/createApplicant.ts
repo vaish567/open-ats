@@ -13,6 +13,7 @@ const ApplicantSchema = Joi.object({
     .required(),
   funnel: Joi.string(),
   stage: Joi.string(),
+  location: Joi.string(),
 }).and("email", "first_name", "last_name", "phone_number");
 interface Applicant {
   /** The email of the applicant */
@@ -20,7 +21,7 @@ interface Applicant {
   first_name: string;
   last_name: string;
   phone_number: string;
-  job?: string;
+  funnel?: string;
   stage?: string;
   location?: string;
 }
@@ -28,7 +29,7 @@ interface Applicant {
 const createApplicant = (applicant: Applicant): object => {
   if (!applicant)
     return {
-      message: `ERROR: 'applicant' not provided - Received ${applicant}`,
+      message: `ERROR: 'applicant' is required`,
     };
 
   const validation = ApplicantSchema.validate(applicant, {
@@ -49,7 +50,7 @@ const createApplicant = (applicant: Applicant): object => {
     first_name,
     last_name,
     phone_number,
-    job,
+    funnel,
     stage,
     location,
   } = applicant;
@@ -61,7 +62,7 @@ const createApplicant = (applicant: Applicant): object => {
       last_name: last_name,
       id: nanoid(idLength),
       phone_number: phone_number,
-      job: job ? job : null,
+      funnel: funnel ? funnel : null,
       stage: stage ? stage : null,
       location: location ? location : null,
       created_at: new Date().toISOString(),

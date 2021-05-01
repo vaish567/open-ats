@@ -2,7 +2,7 @@ import * as Joi from "joi";
 const idLength = 20;
 
 const deleteApplicant = (id: string) => {
-  if (!id) return { message: `ERROR: 'id' not provided - Received ${id}` };
+  if (!id) return { message: `ERROR: 'id' is required` };
   const validation = Joi.string()
     .required()
     .length(idLength)

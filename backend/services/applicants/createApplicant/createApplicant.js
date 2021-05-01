@@ -15,11 +15,12 @@ var ApplicantSchema = Joi.object({
         .required(),
     funnel: Joi.string(),
     stage: Joi.string(),
+    location: Joi.string(),
 }).and("email", "first_name", "last_name", "phone_number");
 var createApplicant = function (applicant) {
     if (!applicant)
         return {
-            message: "ERROR: 'applicant' not provided - Received " + applicant,
+            message: "ERROR: 'applicant' is required",
         };
     var validation = ApplicantSchema.validate(applicant, {
         abortEarly: false,
@@ -34,7 +35,7 @@ var createApplicant = function (applicant) {
             message: "ERROR: " + validation.error.message,
         };
     }
-    var email = applicant.email, first_name = applicant.first_name, last_name = applicant.last_name, phone_number = applicant.phone_number, job = applicant.job, stage = applicant.stage, location = applicant.location;
+    var email = applicant.email, first_name = applicant.first_name, last_name = applicant.last_name, phone_number = applicant.phone_number, funnel = applicant.funnel, stage = applicant.stage, location = applicant.location;
     return {
         message: "Applicant created succesfully!",
         applicant: {
@@ -43,7 +44,7 @@ var createApplicant = function (applicant) {
             last_name: last_name,
             id: nanoid_1.nanoid(idLength),
             phone_number: phone_number,
-            job: job ? job : null,
+            funnel: funnel ? funnel : null,
             stage: stage ? stage : null,
             location: location ? location : null,
             created_at: new Date().toISOString(),
