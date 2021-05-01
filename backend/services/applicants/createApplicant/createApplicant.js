@@ -15,7 +15,7 @@ var ApplicantSchema = Joi.object({
         .required(),
     funnel: Joi.string(),
     stage: Joi.string(),
-    location: Joi.string(),
+    location: Joi.array().items(Joi.string()),
 }).and("email", "first_name", "last_name", "phone_number");
 var createApplicant = function (applicant) {
     if (!applicant)

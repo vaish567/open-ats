@@ -31,7 +31,7 @@ const getApplicant = (id: string) => {
       phone_number: "8391823452",
       funnel: "Software Engineer",
       stage: "Document Upload",
-      location: "Remote",
+      location: ["Remote", "NYC"],
       created_at: new Date().toISOString(),
     },
   };

@@ -13,7 +13,7 @@ const ApplicantSchema = Joi.object({
     .required(),
   funnel: Joi.string(),
   stage: Joi.string(),
-  location: Joi.string(),
+  location: Joi.array().items(Joi.string()),
 }).and("email", "first_name", "last_name", "phone_number");
 interface Applicant {
   /** The email of the applicant */
@@ -23,7 +23,7 @@ interface Applicant {
   phone_number: string;
   funnel?: string;
   stage?: string;
-  location?: string;
+  location?: string[];
 }
 
 const createApplicant = (applicant: Applicant): object => {
