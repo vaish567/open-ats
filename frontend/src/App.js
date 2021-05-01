@@ -1,9 +1,9 @@
 /* This example requires Tailwind CSS v2.0+ */
 import {
   LightningBoltIcon,
-  MailIcon,
   CodeIcon,
   FastForwardIcon,
+  EmojiHappyIcon,
 } from "@heroicons/react/outline";
 
 import SocialFooter from "./components/SocialFooter";
@@ -11,14 +11,14 @@ const features = [
   {
     name: "Open source",
     description:
-      "Customize to your heart's content. Fork it, flip it and reverse it with an MIT license",
+      "Customize to your heart's content. Fork it, flip it and reverse it - MIT licensed",
     icon: CodeIcon,
     link: "https://github.com/joswayski/OpenATS",
   },
   {
     name: "No servers to manage",
     description:
-      "Worrying about servers is sooooo 5 years ago. We use the Serverless framework to deploy our Lambdas",
+      "Worrying about servers is sooooo 5 years ago. We use the Serverless framework to deploy our infastructure",
     icon: LightningBoltIcon,
   },
   {
@@ -31,7 +31,7 @@ const features = [
     name: "Developer experience",
     description:
       "N.E.R.D.T. stack (that's a thing right?) Node, Express, React, DynamoDB, TypeScript",
-    icon: MailIcon,
+    icon: EmojiHappyIcon,
   },
 ];
 
@@ -84,7 +84,7 @@ export default function Example() {
               {features.map((feature) => (
                 <div key={feature.name}>
                   <dt>
-                    <div className="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
+                    <div className="flex items-center justify-center h-12 w-12 rounded-md bg-green-500 text-white">
                       <feature.icon className="h-6 w-6" aria-hidden="true" />
                     </div>
                     <p className="mt-5 text-lg leading-6 font-medium text-gray-900">
