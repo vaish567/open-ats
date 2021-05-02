@@ -2,7 +2,7 @@
 import { nanoid } from "nanoid";
 import * as Joi from "joi";
 
-const idLength = 20;
+const idLength = 25;
 const ApplicantSchema = Joi.object({
   email: Joi.string().email().required(),
   first_name: Joi.string().required().max(50),

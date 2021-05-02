@@ -9,7 +9,6 @@
 // Cost per call to get all applicants = $0.002 I think, too tired to do the math
 import { AttributeValue, DynamoDB } from "@aws-sdk/client-dynamodb";
 import * as Joi from "joi";
-import { string, valid } from "joi";
 const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
 const validSearches: string[] = ["Applicant", "Stage", "Funnel", "Question"];
 const getAllByType = async (

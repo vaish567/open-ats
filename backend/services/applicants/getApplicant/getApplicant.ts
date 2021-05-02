@@ -34,12 +34,9 @@ const getApplicant = async (id: string) => {
     },
     TableName: "OpenATS",
   };
-  // async/await.
   try {
     const data = await dynamodb.getItem(params);
-
     if (!data.Item) return { message: "Applicant not found" };
-
     return data.Item;
   } catch (error) {
     console.error(`Error getting applicant by id ${id}`, error);
