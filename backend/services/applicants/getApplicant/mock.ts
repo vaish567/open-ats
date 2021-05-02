@@ -1,11 +1,17 @@
 import { getApplicant } from "./getApplicant";
 
-// Succesfull
-console.log("Success:");
-console.log(getApplicant("11122233341112223334"));
+const get = async () => {
+  // Succesfull
+  console.log("Success:");
+  console.log(await getApplicant("3"));
 
-// Failures
-console.log("\nFailures:");
-const failStates = ["", "ad2f2", 423423, null];
+  // Failures
+  console.log("\nFailures:");
+  const failStates: any = ["", "ad2f2", 423423, null];
 
-failStates.forEach((state: any) => console.log(getApplicant(state)));
+  for (let state of failStates) {
+    console.log(await getApplicant(state));
+  }
+};
+
+get();
