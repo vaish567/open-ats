@@ -1,4 +1,4 @@
-import { deleteApplicant } from "./deleteApplicant";
+import deleteApplicant from "./deleteApplicant";
 
 // Succesfull
 console.log("Success:");

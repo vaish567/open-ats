@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteApplicant = void 0;
+exports.default = void 0;
 var Joi = require("joi");
 var idLength = 20;
 var deleteApplicant = function (id) {
@@ -27,4 +27,4 @@ var deleteApplicant = function (id) {
         id: id,
     };
 };
-exports.deleteApplicant = deleteApplicant;
+exports.default = deleteApplicant;

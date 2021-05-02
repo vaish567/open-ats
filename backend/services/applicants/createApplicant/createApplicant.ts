@@ -70,4 +70,4 @@ const createApplicant = (applicant: Applicant): object => {
   };
 };
 
-export { createApplicant as createApplicant };
+export { createApplicant as default };
