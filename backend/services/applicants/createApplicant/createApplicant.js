@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createApplicant = void 0;
-var Joi = require("joi");
+// import Joi = require("joi");
 var nanoid_1 = require("nanoid");
-var uuidLength = 50;
+var Joi = require("joi");
+var idLength = 20;
 var ApplicantSchema = Joi.object({
     email: Joi.string().email().required(),
     first_name: Joi.string().required().max(50),
@@ -14,8 +15,13 @@ var ApplicantSchema = Joi.object({
         .required(),
     funnel: Joi.string(),
     stage: Joi.string(),
+    location: Joi.array().items(Joi.string()),
 }).and("email", "first_name", "last_name", "phone_number");
 var createApplicant = function (applicant) {
+    if (!applicant)
+        return {
+            message: "ERROR: 'applicant' is required",
+        };
     var validation = ApplicantSchema.validate(applicant, {
         abortEarly: false,
         errors: {
@@ -29,18 +35,19 @@ var createApplicant = function (applicant) {
             message: "ERROR: " + validation.error.message,
         };
     }
-    var email = applicant.email, first_name = applicant.first_name, last_name = applicant.last_name, phone_number = applicant.phone_number, funnel = applicant.funnel, stage = applicant.stage;
+    var email = applicant.email, first_name = applicant.first_name, last_name = applicant.last_name, phone_number = applicant.phone_number, funnel = applicant.funnel, stage = applicant.stage, location = applicant.location;
     return {
         message: "Applicant created succesfully!",
         applicant: {
             email: email,
             first_name: first_name,
             last_name: last_name,
-            id: nanoid_1.nanoid(uuidLength),
+            id: nanoid_1.nanoid(idLength),
             phone_number: phone_number,
             funnel: funnel ? funnel : null,
             stage: stage ? stage : null,
-            created_at: Math.floor(Date.now() / 1000),
+            location: location ? location : null,
+            created_at: new Date().toISOString(),
         },
     };
 };
