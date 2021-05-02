@@ -7,7 +7,7 @@ const get = async () => {
 
   // Failures
   console.log("\nFailures:");
-  const failStates = ["", "ad2f2", 423423, null];
+  const failStates: any = ["", "ad2f2", 423423, null];
 
   for (let state of failStates) {
     console.log(await getApplicant(state));
