@@ -16,7 +16,6 @@ const ApplicantSchema = Joi.object({
   location: Joi.array().items(Joi.string()),
 }).and("email", "first_name", "last_name", "phone_number");
 interface Applicant {
-  /** The email of the applicant */
   email: string;
   first_name: string;
   last_name: string;
