@@ -48,7 +48,6 @@ exports.default = void 0;
 // Cost per call to get all applicants = $0.002 I think, too tired to do the math
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var Joi = require("joi");
-var joi_1 = require("joi");
 var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
 var validSearches = ["Applicant", "Stage", "Funnel", "Question"];
 var getAllByType = function (searchTerm) { return __awaiter(void 0, void 0, void 0, function () {
@@ -82,31 +81,28 @@ var getAllByType = function (searchTerm) { return __awaiter(void 0, void 0, void
                     ExpressionAttributeValues: {
                         ":v_type": { S: searchTerm },
                     },
-                    ExclusiveStartKey: [key, joi_1.string],
-                    AttributeValue: AttributeValue,
+                    ExclusiveStartKey: undefined,
                 };
                 _b.label = 1;
             case 1:
-                _b.trys.push([1, 6, , 7]);
+                _b.trys.push([1, 3, , 4]);
                 results_1 = [];
-                _b.label = 2;
-            case 2: return [4 /*yield*/, dynamodb.query(params)];
-            case 3:
+                return [4 /*yield*/, dynamodb.query(params)];
+            case 2:
                 data = _b.sent();
-                if (!data.Items)
-                    return [2 /*return*/, { message: searchTerm + " not found" }];
-                data.Items.forEach(function (item) { return results_1.push(item); });
-                params.ExclusiveStartKey = data.LastEvaluatedKey;
-                _b.label = 4;
-            case 4:
-                if (typeof data.LastEvaluatedKey !== "undefined") return [3 /*break*/, 2];
-                _b.label = 5;
-            case 5: return [2 /*return*/, results_1];
-            case 6:
+                do {
+                    if (!data.Items)
+                        return [2 /*return*/, { message: searchTerm + " not found" }];
+                    data.Items.forEach(function (item) { return results_1.push(item); });
+                    params.ExclusiveStartKey = data.LastEvaluatedKey;
+                    // Keep querying to get ALL results
+                } while (typeof data.LastEvaluatedKey !== "undefined");
+                return [2 /*return*/, results_1];
+            case 3:
                 error_1 = _b.sent();
                 console.error("Error getting " + searchTerm, error_1);
                 return [2 /*return*/, { message: "ERROR: " + error_1.message }];
-            case 7: return [2 /*return*/];
+            case 4: return [2 /*return*/];
         }
     });
 }); };
