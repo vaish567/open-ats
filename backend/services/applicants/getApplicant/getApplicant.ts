@@ -1,5 +1,5 @@
 import * as Joi from "joi";
-const idLength = 20;
+const idLength = 25;
 import { DynamoDB } from "@aws-sdk/client-dynamodb";
 const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
 

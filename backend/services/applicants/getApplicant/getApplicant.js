@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getApplicant = void 0;
 var Joi = require("joi");
-var idLength = 20;
+var idLength = 25;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
 var getApplicant = function (id) { return __awaiter(void 0, void 0, void 0, function () {
