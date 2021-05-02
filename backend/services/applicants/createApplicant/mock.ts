@@ -1,4 +1,4 @@
-import { createApplicant } from "./createApplicant";
+import createApplicant from "./createApplicant";
 
 // Succesfull
 console.log("Succesful:");

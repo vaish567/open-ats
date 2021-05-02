@@ -36,22 +36,29 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getApplicant = void 0;
-var Joi = require("joi");
-var idLength = 25;
+exports.default = void 0;
+// NOTE
+// NOTE
+// NOTE
+// This is an 'expensive' call
+// At 4kb per applicant & 4 million applicants
+// DynamoDB $0.25 per million reads
+// Query returns 1mb / 4kb = 250 applicants per call
+// 4 million / 250 applicants per call = 16,000 calls to get all
+// Cost per call to get all applicants = $0.002 I think, too tired to do the math
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
+var Joi = require("joi");
 var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
-var getApplicant = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-    var validation, params, data, error_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+var validSearches = ["Applicant", "Stage", "Funnel", "Question"];
+var getAllByType = function (searchTerm) { return __awaiter(void 0, void 0, void 0, function () {
+    var validation, params, results_1, data, error_1;
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
-                if (!id)
-                    return [2 /*return*/, { message: "ERROR: 'id' is required" }];
-                validation = Joi.string()
-                    .required()
-                    .length(idLength)
-                    .validate(id, {
+                validation = (_a = Joi.string()
+                    .required())
+                    .valid.apply(_a, validSearches).validate(searchTerm, {
                     abortEarly: false,
                     errors: {
                         wrap: {
@@ -65,31 +72,38 @@ var getApplicant = function (id) { return __awaiter(void 0, void 0, void 0, func
                         }];
                 }
                 params = {
-                    Key: {
-                        PK: {
-                            S: "APPLICANT#" + id,
-                        },
-                        SK: {
-                            S: "APPLICANT#" + id,
-                        },
-                    },
                     TableName: "OpenATS",
+                    IndexName: "AllByType",
+                    KeyConditionExpression: "#type = :v_type",
+                    ExpressionAttributeNames: {
+                        "#type": "TYPE",
+                    },
+                    ExpressionAttributeValues: {
+                        ":v_type": { S: searchTerm },
+                    },
+                    ExclusiveStartKey: undefined,
                 };
-                _a.label = 1;
+                _b.label = 1;
             case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, dynamodb.getItem(params)];
+                _b.trys.push([1, 3, , 4]);
+                results_1 = [];
+                return [4 /*yield*/, dynamodb.query(params)];
             case 2:
-                data = _a.sent();
-                if (!data.Item)
-                    return [2 /*return*/, { message: "Applicant not found" }];
-                return [2 /*return*/, data.Item];
+                data = _b.sent();
+                do {
+                    if (!data.Items)
+                        return [2 /*return*/, { message: searchTerm + " not found" }];
+                    data.Items.forEach(function (item) { return results_1.push(item); });
+                    params.ExclusiveStartKey = data.LastEvaluatedKey;
+                    // Keep querying to get ALL results
+                } while (typeof data.LastEvaluatedKey !== "undefined");
+                return [2 /*return*/, results_1];
             case 3:
-                error_1 = _a.sent();
-                console.error("Error getting applicant by id " + id, error_1);
+                error_1 = _b.sent();
+                console.error("Error getting " + searchTerm, error_1);
                 return [2 /*return*/, { message: "ERROR: " + error_1.message }];
             case 4: return [2 /*return*/];
         }
     });
 }); };
-exports.getApplicant = getApplicant;
+exports.default = getAllByType;

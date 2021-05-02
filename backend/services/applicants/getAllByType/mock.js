@@ -36,60 +36,17 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getApplicant = void 0;
-var Joi = require("joi");
-var idLength = 25;
-var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
-var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
-var getApplicant = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-    var validation, params, data, error_1;
+var getAllByType_1 = require("./getAllByType");
+var getAll = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var x;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0:
-                if (!id)
-                    return [2 /*return*/, { message: "ERROR: 'id' is required" }];
-                validation = Joi.string()
-                    .required()
-                    .length(idLength)
-                    .validate(id, {
-                    abortEarly: false,
-                    errors: {
-                        wrap: {
-                            label: "''",
-                        },
-                    },
-                });
-                if (validation.error) {
-                    return [2 /*return*/, {
-                            message: "ERROR: " + validation.error.message,
-                        }];
-                }
-                params = {
-                    Key: {
-                        PK: {
-                            S: "APPLICANT#" + id,
-                        },
-                        SK: {
-                            S: "APPLICANT#" + id,
-                        },
-                    },
-                    TableName: "OpenATS",
-                };
-                _a.label = 1;
+            case 0: return [4 /*yield*/, getAllByType_1.default("Stage")];
             case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, dynamodb.getItem(params)];
-            case 2:
-                data = _a.sent();
-                if (!data.Item)
-                    return [2 /*return*/, { message: "Applicant not found" }];
-                return [2 /*return*/, data.Item];
-            case 3:
-                error_1 = _a.sent();
-                console.error("Error getting applicant by id " + id, error_1);
-                return [2 /*return*/, { message: "ERROR: " + error_1.message }];
-            case 4: return [2 /*return*/];
+                x = _a.sent();
+                console.log(x);
+                return [2 /*return*/];
         }
     });
 }); };
-exports.getApplicant = getApplicant;
+getAll();

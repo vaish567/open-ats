@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createApplicant = void 0;
+exports.default = void 0;
 // import Joi = require("joi");
 var nanoid_1 = require("nanoid");
 var Joi = require("joi");
-var idLength = 20;
+var idLength = 25;
 var ApplicantSchema = Joi.object({
     email: Joi.string().email().required(),
     first_name: Joi.string().required().max(50),
@@ -51,4 +51,4 @@ var createApplicant = function (applicant) {
         },
     };
 };
-exports.createApplicant = createApplicant;
+exports.default = createApplicant;
