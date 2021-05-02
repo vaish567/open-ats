@@ -37,15 +37,41 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = void 0;
+// NOTE
+// NOTE
+// NOTE
+// This is an 'expensive' call
+// At 4kb per applicant & 4 million applicants
+// DynamoDB $0.25 per million reads
+// Query returns 1mb / 4kb = 250 applicants per call
+// 4 million / 250 applicants per call = 16,000 calls to get all
+// Cost per call to get all applicants = $0.002 I think, too tired to do the math
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
+var Joi = require("joi");
+var joi_1 = require("joi");
 var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
-// NOTE - This is an expensive call, not recommended
-//
+var validSearches = ["Applicant", "Stage", "Funnel", "Question"];
 var getAllByType = function (searchTerm) { return __awaiter(void 0, void 0, void 0, function () {
-    var params, data, error_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var validation, params, results_1, data, error_1;
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
+                validation = (_a = Joi.string()
+                    .required())
+                    .valid.apply(_a, validSearches).validate(searchTerm, {
+                    abortEarly: false,
+                    errors: {
+                        wrap: {
+                            label: "''",
+                        },
+                    },
+                });
+                if (validation.error) {
+                    return [2 /*return*/, {
+                            message: "ERROR: " + validation.error.message,
+                        }];
+                }
                 params = {
                     TableName: "OpenATS",
                     IndexName: "AllByType",
@@ -56,20 +82,31 @@ var getAllByType = function (searchTerm) { return __awaiter(void 0, void 0, void
                     ExpressionAttributeValues: {
                         ":v_type": { S: searchTerm },
                     },
+                    ExclusiveStartKey: [key, joi_1.string],
+                    AttributeValue: AttributeValue,
                 };
-                _a.label = 1;
+                _b.label = 1;
             case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, dynamodb.query(params)];
-            case 2:
-                data = _a.sent();
+                _b.trys.push([1, 6, , 7]);
+                results_1 = [];
+                _b.label = 2;
+            case 2: return [4 /*yield*/, dynamodb.query(params)];
+            case 3:
+                data = _b.sent();
                 if (!data.Items)
                     return [2 /*return*/, { message: searchTerm + " not found" }];
-                return [2 /*return*/, data.Items];
-            case 3:
-                error_1 = _a.sent();
+                data.Items.forEach(function (item) { return results_1.push(item); });
+                params.ExclusiveStartKey = data.LastEvaluatedKey;
+                _b.label = 4;
+            case 4:
+                if (typeof data.LastEvaluatedKey !== "undefined") return [3 /*break*/, 2];
+                _b.label = 5;
+            case 5: return [2 /*return*/, results_1];
+            case 6:
+                error_1 = _b.sent();
+                console.error("Error getting " + searchTerm, error_1);
                 return [2 /*return*/, { message: "ERROR: " + error_1.message }];
-            case 4: return [2 /*return*/];
+            case 7: return [2 /*return*/];
         }
     });
 }); };
