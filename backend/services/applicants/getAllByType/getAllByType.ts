@@ -66,4 +66,4 @@ const getAllByType = async (
     return { message: `ERROR: ${error.message}` };
   }
 };
-export { getAllByType as default };
+export default getAllByType;

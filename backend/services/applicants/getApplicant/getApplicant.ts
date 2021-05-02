@@ -44,4 +44,4 @@ const getApplicant = async (id: string) => {
   }
 };
 
-export { getApplicant as getApplicant };
+export default getApplicant;

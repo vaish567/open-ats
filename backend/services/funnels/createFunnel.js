@@ -36,7 +36,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = void 0;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var Joi = require("joi");
 var nanoid_1 = require("nanoid");

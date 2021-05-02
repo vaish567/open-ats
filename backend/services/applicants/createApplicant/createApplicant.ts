@@ -69,4 +69,4 @@ const createApplicant = (applicant: Applicant): object => {
   };
 };
 
-export { createApplicant as default };
+export default createApplicant;

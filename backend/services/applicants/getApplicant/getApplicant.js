@@ -36,7 +36,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getApplicant = void 0;
 var Joi = require("joi");
 var idLength = 25;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
@@ -92,4 +91,4 @@ var getApplicant = function (id) { return __awaiter(void 0, void 0, void 0, func
         }
     });
 }); };
-exports.getApplicant = getApplicant;
+exports.default = getApplicant;

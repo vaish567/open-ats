@@ -1,4 +1,4 @@
-import { getApplicant } from "./getApplicant";
+import getApplicant from "./getApplicant";
 
 const get = async () => {
   // Succesfull

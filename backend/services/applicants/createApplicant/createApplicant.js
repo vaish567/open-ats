@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = void 0;
 // import Joi = require("joi");
 var nanoid_1 = require("nanoid");
 var Joi = require("joi");
