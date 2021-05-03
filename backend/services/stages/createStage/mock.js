@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var createStage_1 = require("./createStage");
-var getAllByType_1 = require("../../getAllByType/getAllByType");
+var getAllByType_1 = require("../../search/getAllByType");
 var create = function () { return __awaiter(void 0, void 0, void 0, function () {
     var allFunnels, desiredFunnelId, funnelId, funnelTitle, stage, _a, _b;
     return __generator(this, function (_c) {

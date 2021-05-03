@@ -61,12 +61,13 @@ var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, 
                     locations: Joi.array().items(Joi.string()).required(),
                     description: Joi.string().max(descriptionMaxLength).required(),
                     pay: Joi.object({
+                        // TODO
                         isFixed: Joi.bool().required(),
                         type: Joi.valid.apply(Joi, salaryTypes).required(),
                         lowEnd: Joi.string().required(),
                         fixed: Joi.string().required(),
                         highEnd: Joi.string().required(),
-                        currency: Joi.string().length(3).required(),
+                        currency: Joi.string().length(3).required(), // TODO
                     }),
                 });
                 validation = FunnelSchema.validate(funnel, JoiConfig);

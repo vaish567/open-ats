@@ -31,12 +31,13 @@ const createFunnel = async (funnel: {
     locations: Joi.array().items(Joi.string()).required(),
     description: Joi.string().max(descriptionMaxLength).required(),
     pay: Joi.object({
-      isFixed: Joi.bool().required(),
-      type: Joi.valid(...salaryTypes).required(), // TODO this shouldn't be required due to the differen't salary types
-      lowEnd: Joi.string().required(),
-      fixed: Joi.string().required(),
-      highEnd: Joi.string().required(),
-      currency: Joi.string().length(3).required(),
+      // TODO
+      isFixed: Joi.bool().required(), // TODO
+      type: Joi.valid(...salaryTypes).required(), // TODO some of these shouldn't be required due to the differen't salary types
+      lowEnd: Joi.string().required(), // TODO
+      fixed: Joi.string().required(), // TODO
+      highEnd: Joi.string().required(), // TODO
+      currency: Joi.string().length(3).required(), // TODO
     }),
   });
 
