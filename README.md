@@ -37,7 +37,7 @@ The DynamoDB access patterns are as follows:
 - Get an applicant by an ID
 - Get funnel info by ID (_Description, salary, location, etc._)
 - Get a funnel's stages by ID
-  - SK: 'begins_with' = 'STAGE#'
+  - SK: 'begins_with' = 'STAGE_TITLE#'
 
 **GSI: ApplicantsByFunnelByStage**
 
