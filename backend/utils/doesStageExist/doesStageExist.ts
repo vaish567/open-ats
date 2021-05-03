@@ -10,7 +10,7 @@ const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
 const doesStageExist = async (
   funnelId: string,
   stageName: string
-): Promise<boolean> => {
+): Promise<boolean | { message: string }> => {
   const params = {
     TableName: "OpenATS", // TODO switch to parameter store?
     Key: {
@@ -19,7 +19,14 @@ const doesStageExist = async (
     },
   };
 
-  const response = await dynamodb.getItem(params);
-  return response.Item ? true : false;
+  try {
+    const response = await dynamodb.getItem(params);
+    return response.Item ? true : false;
+  } catch (error) {
+    console.error(error);
+    return {
+      message: `An error occurred checking if a funnel exists ${error.message}`,
+    };
+  }
 };
 export default doesStageExist;

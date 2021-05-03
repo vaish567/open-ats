@@ -35,8 +35,8 @@ const createFunnel = async (funnel: {
       isFixed: Joi.bool().required(), // TODO
       type: Joi.valid(...salaryTypes).required(), // TODO ------- some of these shouldn't be required
       lowEnd: Joi.string().required(), // TODO  ----------------  due to the different salary types
-      fixed: Joi.string().required(), // TODO ------------------ If Salary = should be 'fixed' only
-      highEnd: Joi.string().required(), // TODO
+      fixed: Joi.string().required(), // TODO ------------------ If pay type = Salary,
+      highEnd: Joi.string().required(), // TODO ---------------- then only 'fixed' should be here
       currency: Joi.string().length(3).required(), // TODO
     }),
   });

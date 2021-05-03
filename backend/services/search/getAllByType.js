@@ -10,6 +10,7 @@
  * Querying 4 million applicants = $0.00000025 * 20,000 = $0.005
  * Soooooo... do with that what you will. Use with caution.
  * TODO will Lambda's timeout even let you do that many queries? lol
+ *
  */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -60,6 +61,7 @@ var joiConfig = {
         },
     },
 };
+// Results, if found, will be in an array. Errors will be a message containing the error
 var getAllByType = function (searchTerm) { return __awaiter(void 0, void 0, void 0, function () {
     var validation, dynamoDBParams, results_1, data, error_1;
     var _a;

@@ -9,6 +9,7 @@
  * Querying 4 million applicants = $0.00000025 * 20,000 = $0.005
  * Soooooo... do with that what you will. Use with caution.
  * TODO will Lambda's timeout even let you do that many queries? lol
+ *
  */
 
 import { AttributeValue, DynamoDB } from "@aws-sdk/client-dynamodb";
@@ -23,10 +24,10 @@ const joiConfig = {
     },
   },
 };
+// Results, if found, will be in an array. Errors will be a message containing the error
 const getAllByType = async (
   searchTerm: "Applicant" | "Stage" | "Funnel" | "Question"
 ): Promise<{ message: string } | any[]> => {
-  // Results, if found, will be in an array. Errors will be a message containing the error
   const validation = Joi.string()
     .required()
     .valid(...validSearches)

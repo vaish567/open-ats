@@ -38,33 +38,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var getApplicant_1 = require("./getApplicant");
 var get = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b, failStates, _i, failStates_1, state, _c, _d;
-    return __generator(this, function (_e) {
-        switch (_e.label) {
+    var _a, _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
             case 0:
-                // Succesfull
-                console.log("Success:");
                 _b = (_a = console).log;
-                return [4 /*yield*/, getApplicant_1.default("3")];
+                return [4 /*yield*/, getApplicant_1.default("23423")];
             case 1:
-                _b.apply(_a, [_e.sent()]);
-                // Failures
-                console.log("\nFailures:");
-                failStates = ["", "ad2f2", 423423, null];
-                _i = 0, failStates_1 = failStates;
-                _e.label = 2;
-            case 2:
-                if (!(_i < failStates_1.length)) return [3 /*break*/, 5];
-                state = failStates_1[_i];
-                _d = (_c = console).log;
-                return [4 /*yield*/, getApplicant_1.default(state)];
-            case 3:
-                _d.apply(_c, [_e.sent()]);
-                _e.label = 4;
-            case 4:
-                _i++;
-                return [3 /*break*/, 2];
-            case 5: return [2 /*return*/];
+                _b.apply(_a, [_c.sent()]);
+                return [2 /*return*/];
         }
     });
 }); };
