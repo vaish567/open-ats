@@ -26,7 +26,7 @@ const features = [
   {
     name: "Massive throughput",
     description:
-      "Designed for the gig economy in mind. Hire more people, faster, without hiccups",
+      "Designed with the gig economy in mind. Hire more people, faster, without hiccups",
     icon: FastForwardIcon,
     iconColor: `bg-gradient-to-r from-red-400 to-red-500`,
   },

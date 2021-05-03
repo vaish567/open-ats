@@ -2,9 +2,15 @@ import { DynamoDB } from "@aws-sdk/client-dynamodb";
 import * as Joi from "joi";
 import { nanoid } from "nanoid";
 const idLength = 25;
-
 const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
-
+const joiConfig = {
+  abortEarly: false,
+  errors: {
+    wrap: {
+      label: "''",
+    },
+  },
+};
 const ApplicantSchema = Joi.object({
   email: Joi.string().email().required(),
   first_name: Joi.string().required().max(50),
@@ -24,35 +30,29 @@ const ApplicantSchema = Joi.object({
   "funnel_id"
 );
 
+// TODO add applicant types once schema has been laid out
+// Fountain just uses a 'data' attribute and all custom data fields go in there
+// Might be a good idea
 const createApplicant = async (applicant): object => {
+  // TS will yell at you in the meantime btw
   if (!applicant)
     return {
-      message: `ERROR: 'applicant' is required`,
+      message: `ERROR: 'applicant' is required`, // TODO Joi can take care of this i :thonk:
     };
 
-  const validation = ApplicantSchema.validate(applicant, {
-    abortEarly: false,
-    errors: {
-      wrap: {
-        label: "''",
-      },
-    },
-  });
-  if (validation.error) {
-    return {
-      message: `ERROR: ${validation.error.message}`,
-    };
-  }
+  const validation = ApplicantSchema.validate(applicant, joiConfig);
+  if (validation.error)
+    return { message: `ERROR: ${validation.error.message}` };
+
   const applicantId = nanoid(idLength);
   // TODO check if stage exists first
-
-  let params = {
+  // TODO update ^ has been created, just need to import
+  const params = {
     Item: {
       PK: { S: applicantId },
       SK: { S: applicantId },
       TYPE: { S: "Applicant" },
       APPLICANT_ID: { S: applicantId },
-
       CREATED_AT: { S: new Date().toISOString() },
       CURRENT_FUNNEL_ID: { S: "vlXTvxE9xOYpuNZfXDZuEQHFV" }, // TODO get funnel id's first
       CURRENT_FUNNEL_TITLE: { S: "Software Engineer" }, // TODO get funnel id's first
@@ -63,7 +63,7 @@ const createApplicant = async (applicant): object => {
       FULL_NAME: { S: `${applicant.first_name} ${applicant.last_name}` },
       PHONE_NUMBER: { S: applicant.phone_number },
     },
-    TableName: "OpenATS",
+    TableName: "OpenATS", // TODO parameter store???
   };
 
   try {
@@ -71,7 +71,10 @@ const createApplicant = async (applicant): object => {
     return {
       message: "Applicant created succesfully!",
     };
-  } catch (error) {}
+  } catch (error) {
+    console.error(error);
+    console.error(`An error occurred creating your applicant ${error.message}`);
+  }
 };
 
 export default createApplicant;

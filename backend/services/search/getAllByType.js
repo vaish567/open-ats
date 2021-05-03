@@ -1,4 +1,16 @@
 "use strict";
+/**
+ * Note: Depending on your applicant pool, this might be an 'expensive' call to make.
+ * For the sake of argument, let's say each applicant is 5kb in size.
+ * Dynamo charges $.25 for every million calls.
+ * Querying returns a max of 1mb per call.
+ * 4,000,000 applicants * 5kb each = 20,000mb.
+ * This means, at *minimum*, you will need to make 20,000 calls to Dynamo.
+ * Dynamo price per call = $0.00000025
+ * Querying 4 million applicants = $0.00000025 * 20,000 = $0.005
+ * Soooooo... do with that what you will. Use with caution.
+ * TODO will Lambda's timeout even let you do that many queries? lol
+ */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -37,80 +49,63 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
-var Joi = require("joi");
-var nanoid_1 = require("nanoid");
-var idLength = 25;
 var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
-var joiConfig = {
-    abortEarly: false,
-    errors: {
-        wrap: {
-            label: "''",
-        },
-    },
-};
-var ApplicantSchema = Joi.object({
-    email: Joi.string().email().required(),
-    first_name: Joi.string().required().max(50),
-    last_name: Joi.string().required().max(50),
-    phone_number: Joi.string()
-        .length(10)
-        .pattern(/^[0-9]+$/)
-        .required(),
-    funnel_id: Joi.string(),
-    stage: Joi.string(),
-}).and("email", "first_name", "last_name", "phone_number", "stage", "funnel_id");
-// TODO add applicant types once schema has been laid out
-// Fountain just uses a 'data' attribute and all custom data fields go in there
-// Might be a good idea
-var createApplicant = function (applicant) { return __awaiter(void 0, void 0, void 0, function () {
-    var validation, applicantId, params, error_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+var Joi = require("joi");
+var validSearches = ["Applicant", "Stage", "Funnel", "Question"];
+var getAllByType = function (searchTerm) { return __awaiter(void 0, void 0, void 0, function () {
+    var validation, params, results_1, data, error_1;
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
-                // TS will yell at you in the meantime btw
-                if (!applicant)
-                    return [2 /*return*/, {
-                            message: "ERROR: 'applicant' is required", // TODO Joi can take care of this i :thonk:
-                        }];
-                validation = ApplicantSchema.validate(applicant, joiConfig);
-                if (validation.error)
-                    return [2 /*return*/, { message: "ERROR: " + validation.error.message }];
-                applicantId = nanoid_1.nanoid(idLength);
-                params = {
-                    Item: {
-                        PK: { S: applicantId },
-                        SK: { S: applicantId },
-                        TYPE: { S: "Applicant" },
-                        APPLICANT_ID: { S: applicantId },
-                        CREATED_AT: { S: new Date().toISOString() },
-                        CURRENT_FUNNEL_ID: { S: "vlXTvxE9xOYpuNZfXDZuEQHFV" },
-                        CURRENT_FUNNEL_TITLE: { S: "Software Engineer" },
-                        CURRENT_STAGE_TITLE: { S: "STAGE_TITLE#" + applicant.stage },
-                        EMAIL: { S: applicant.email },
-                        FIRST_NAME: { S: applicant.first_name },
-                        LAST_NAME: { S: applicant.last_name },
-                        FULL_NAME: { S: applicant.first_name + " " + applicant.last_name },
-                        PHONE_NUMBER: { S: applicant.phone_number },
+                validation = (_a = Joi.string()
+                    .required())
+                    .valid.apply(_a, validSearches).validate(searchTerm, {
+                    abortEarly: false,
+                    errors: {
+                        wrap: {
+                            label: "''",
+                        },
                     },
-                    TableName: "OpenATS", // TODO parameter store???
+                });
+                if (validation.error) {
+                    return [2 /*return*/, {
+                            message: "ERROR: " + validation.error.message,
+                        }];
+                }
+                params = {
+                    TableName: "OpenATS",
+                    IndexName: "AllByType",
+                    KeyConditionExpression: "#type = :v_type",
+                    ExpressionAttributeNames: {
+                        "#type": "TYPE",
+                    },
+                    ExpressionAttributeValues: {
+                        ":v_type": { S: searchTerm },
+                    },
+                    ExclusiveStartKey: undefined,
                 };
-                _a.label = 1;
+                _b.label = 1;
             case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, dynamodb.putItem(params)];
+                _b.trys.push([1, 3, , 4]);
+                results_1 = [];
+                return [4 /*yield*/, dynamodb.query(params)];
             case 2:
-                _a.sent();
-                return [2 /*return*/, {
-                        message: "Applicant created succesfully!",
-                    }];
+                data = _b.sent();
+                do {
+                    if (!data.Items)
+                        return [2 /*return*/, { message: searchTerm + " not found" }];
+                    data.Items.forEach(function (item) { return results_1.push(item); });
+                    params.ExclusiveStartKey = data.LastEvaluatedKey;
+                    // Keep querying to get ALL results
+                } while (typeof data.LastEvaluatedKey !== "undefined");
+                return [2 /*return*/, results_1];
             case 3:
-                error_1 = _a.sent();
-                console.error(error_1);
-                console.error("An error occurred creating your applicant " + error_1.message);
-                return [3 /*break*/, 4];
+                error_1 = _b.sent();
+                console.error("Error getting " + searchTerm, error_1);
+                return [2 /*return*/, { message: "ERROR: " + error_1.message }];
             case 4: return [2 /*return*/];
         }
     });
 }); };
-exports.default = createApplicant;
+exports.default = getAllByType;
