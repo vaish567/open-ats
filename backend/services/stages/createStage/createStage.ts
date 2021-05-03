@@ -1,18 +1,14 @@
 import { DynamoDB } from "@aws-sdk/client-dynamodb";
 import * as Joi from "joi";
-import { nanoid } from "nanoid";
-const idLength = 25;
 
 const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
-
-interface Stage {
-  PK: string; // STAGE_NAME#Questionnaire
+const createStage = async (stage: {
+  PK: string;
   TITLE: string;
-  FUNNEL_ID: string; // Funnel ID of where this stage belongs
+  FUNNEL_ID: string;
   FUNNEL_TITLE: string;
-}
-
-const createStage = async (stage: Stage) => {
+}): Promise<{ message: string }> => {
+  // TODO add validation here with Joi
   let params = {
     Item: {
       PK: { S: stage.FUNNEL_ID },

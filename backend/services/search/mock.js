@@ -38,13 +38,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var getAllByType_1 = require("./getAllByType");
 var getAll = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var x;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, getAllByType_1.default("Stage")];
+    var _a, _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                _b = (_a = console).log;
+                return [4 /*yield*/, getAllByType_1.default("Stage")];
             case 1:
-                x = _a.sent();
-                console.log(x);
+                _b.apply(_a, [_c.sent()]);
                 return [2 /*return*/];
         }
     });
