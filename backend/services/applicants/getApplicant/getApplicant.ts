@@ -2,19 +2,19 @@ import * as Joi from "joi";
 const idLength = 25;
 import { DynamoDB } from "@aws-sdk/client-dynamodb";
 const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
-
+const joiConfig = {
+  abortEarly: false,
+  errors: {
+    wrap: {
+      label: "''",
+    },
+  },
+};
 const getApplicant = async (id: string) => {
   const validation = Joi.string()
     .required()
     .length(idLength)
-    .validate(id, {
-      abortEarly: false,
-      errors: {
-        wrap: {
-          label: "''",
-        },
-      },
-    });
+    .validate(id, joiConfig);
 
   if (validation.error)
     return { message: `ERROR: ${validation.error.message}` };

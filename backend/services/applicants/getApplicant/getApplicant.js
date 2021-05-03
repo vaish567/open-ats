@@ -40,6 +40,14 @@ var Joi = require("joi");
 var idLength = 25;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
+var joiConfig = {
+    abortEarly: false,
+    errors: {
+        wrap: {
+            label: "''",
+        },
+    },
+};
 var getApplicant = function (id) { return __awaiter(void 0, void 0, void 0, function () {
     var validation, params, data, error_1;
     return __generator(this, function (_a) {
@@ -48,14 +56,7 @@ var getApplicant = function (id) { return __awaiter(void 0, void 0, void 0, func
                 validation = Joi.string()
                     .required()
                     .length(idLength)
-                    .validate(id, {
-                    abortEarly: false,
-                    errors: {
-                        wrap: {
-                            label: "''",
-                        },
-                    },
-                });
+                    .validate(id, joiConfig);
                 if (validation.error)
                     return [2 /*return*/, { message: "ERROR: " + validation.error.message }];
                 params = {
