@@ -52,28 +52,28 @@ var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
 var Joi = require("joi");
 var validSearches = ["Applicant", "Stage", "Funnel", "Question"];
+var joiConfig = {
+    abortEarly: false,
+    errors: {
+        wrap: {
+            label: "''",
+        },
+    },
+};
 var getAllByType = function (searchTerm) { return __awaiter(void 0, void 0, void 0, function () {
-    var validation, params, results_1, data, error_1;
+    var validation, dynamoDBParams, results_1, data, error_1;
     var _a;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
                 validation = (_a = Joi.string()
                     .required())
-                    .valid.apply(_a, validSearches).validate(searchTerm, {
-                    abortEarly: false,
-                    errors: {
-                        wrap: {
-                            label: "''",
-                        },
-                    },
-                });
-                if (validation.error) {
+                    .valid.apply(_a, validSearches).validate(searchTerm);
+                if (validation.error)
                     return [2 /*return*/, {
                             message: "ERROR: " + validation.error.message,
                         }];
-                }
-                params = {
+                dynamoDBParams = {
                     TableName: "OpenATS",
                     IndexName: "AllByType",
                     KeyConditionExpression: "#type = :v_type",
@@ -89,14 +89,14 @@ var getAllByType = function (searchTerm) { return __awaiter(void 0, void 0, void
             case 1:
                 _b.trys.push([1, 3, , 4]);
                 results_1 = [];
-                return [4 /*yield*/, dynamodb.query(params)];
+                return [4 /*yield*/, dynamodb.query(dynamoDBParams)];
             case 2:
                 data = _b.sent();
                 do {
                     if (!data.Items)
                         return [2 /*return*/, { message: searchTerm + " not found" }];
                     data.Items.forEach(function (item) { return results_1.push(item); });
-                    params.ExclusiveStartKey = data.LastEvaluatedKey;
+                    dynamoDBParams.ExclusiveStartKey = data.LastEvaluatedKey;
                     // Keep querying to get ALL results
                 } while (typeof data.LastEvaluatedKey !== "undefined");
                 return [2 /*return*/, results_1];

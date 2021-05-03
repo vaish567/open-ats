@@ -7,7 +7,10 @@ const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
  * @param stageName - The stage name to check for (Questionnaire, Set Up Profile, etc.)
  * @returns true or false
  */
-const doesStageExist = async (funnelId: string, stageName: string) => {
+const doesStageExist = async (
+  funnelId: string,
+  stageName: string
+): Promise<boolean> => {
   const params = {
     TableName: "OpenATS", // TODO switch to parameter store?
     Key: {

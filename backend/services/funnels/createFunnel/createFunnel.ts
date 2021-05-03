@@ -48,8 +48,8 @@ const createFunnel = async (funnel: {
     };
   }
 
-  const newFunnelId = nanoid(idLength);
-  const params = {
+  const newFunnelId: string = nanoid(idLength);
+  const dynamoDBParams = {
     Item: {
       PK: { S: newFunnelId },
       SK: { S: newFunnelId },
@@ -72,7 +72,7 @@ const createFunnel = async (funnel: {
     TableName: "OpenATS", // TODO move to parameter store?
   };
   try {
-    await dynamodb.putItem(params);
+    await dynamodb.putItem(dynamoDBParams);
     return { message: `Funnel  ${funnel.title} created!` };
   } catch (error) {
     console.error(error);

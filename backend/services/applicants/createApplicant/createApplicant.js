@@ -64,7 +64,7 @@ var ApplicantSchema = Joi.object({
 // Fountain just uses a 'data' attribute and all custom data fields go in there
 // Might be a good idea
 var createApplicant = function (applicant) { return __awaiter(void 0, void 0, void 0, function () {
-    var validation, applicantId, params, error_1;
+    var validation, applicantId, dynamoDBParams, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -77,7 +77,7 @@ var createApplicant = function (applicant) { return __awaiter(void 0, void 0, vo
                 if (validation.error)
                     return [2 /*return*/, { message: "ERROR: " + validation.error.message }];
                 applicantId = nanoid_1.nanoid(idLength);
-                params = {
+                dynamoDBParams = {
                     Item: {
                         PK: { S: applicantId },
                         SK: { S: applicantId },
@@ -98,7 +98,7 @@ var createApplicant = function (applicant) { return __awaiter(void 0, void 0, vo
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, dynamodb.putItem(params)];
+                return [4 /*yield*/, dynamodb.putItem(dynamoDBParams)];
             case 2:
                 _a.sent();
                 return [2 /*return*/, {
@@ -107,8 +107,9 @@ var createApplicant = function (applicant) { return __awaiter(void 0, void 0, vo
             case 3:
                 error_1 = _a.sent();
                 console.error(error_1);
-                console.error("An error occurred creating your applicant " + error_1.message);
-                return [3 /*break*/, 4];
+                return [2 /*return*/, {
+                        message: "An error occurred creating your applicant " + error_1.message,
+                    }];
             case 4: return [2 /*return*/];
         }
     });
