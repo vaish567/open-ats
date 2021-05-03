@@ -38,10 +38,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var createFunnel_1 = require("./createFunnel");
 var create = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b;
+    var newFunnel, _a, _b;
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
+                newFunnel = {
+                    title: "Boston",
+                    locations: ["Remote"],
+                    description: "Come work for us!",
+                };
                 _b = (_a = console).log;
                 return [4 /*yield*/, createFunnel_1.default({
                         title: "Wiretapper",

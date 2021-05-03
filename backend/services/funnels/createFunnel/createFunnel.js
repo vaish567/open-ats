@@ -52,7 +52,7 @@ var JoiConfig = {
     },
 };
 var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, function () {
-    var FunnelSchema, validation, newFunnelId, dynamoDBParams, error_1;
+    var FunnelSchema, validation, newFunnelId, params, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -77,7 +77,7 @@ var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, 
                         }];
                 }
                 newFunnelId = nanoid_1.nanoid(idLength);
-                dynamoDBParams = {
+                params = {
                     Item: {
                         PK: { S: newFunnelId },
                         SK: { S: newFunnelId },
@@ -102,7 +102,7 @@ var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, 
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, dynamodb.putItem(dynamoDBParams)];
+                return [4 /*yield*/, dynamodb.putItem(params)];
             case 2:
                 _a.sent();
                 return [2 /*return*/, { message: "Funnel  " + funnel.title + " created!" }];

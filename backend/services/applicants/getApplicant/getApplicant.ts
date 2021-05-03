@@ -2,24 +2,24 @@ import * as Joi from "joi";
 const idLength = 25;
 import { DynamoDB } from "@aws-sdk/client-dynamodb";
 const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
-const joiConfig = {
-  abortEarly: false,
-  errors: {
-    wrap: {
-      label: "''",
-    },
-  },
-};
-const getApplicant = async (id: string): Promise<{ message: string }> => {
+
+const getApplicant = async (id: string) => {
   const validation = Joi.string()
     .required()
     .length(idLength)
-    .validate(id, joiConfig);
+    .validate(id, {
+      abortEarly: false,
+      errors: {
+        wrap: {
+          label: "''",
+        },
+      },
+    });
 
   if (validation.error)
     return { message: `ERROR: ${validation.error.message}` };
 
-  const dynamoDBParams = {
+  const params = {
     Key: {
       PK: {
         S: `APPLICANT#${id}`,
@@ -31,7 +31,7 @@ const getApplicant = async (id: string): Promise<{ message: string }> => {
     TableName: "OpenATS", // TODO use parameter store?
   };
   try {
-    const data = await dynamodb.getItem(dynamoDBParams);
+    const data = await dynamodb.getItem(params);
     if (!data.Item) return { message: "Applicant not found" };
     return data.Item;
   } catch (error) {

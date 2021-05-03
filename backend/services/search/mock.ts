@@ -1,7 +1,8 @@
 import getAllByType from "./getAllByType";
 
 const getAll = async () => {
-  console.log(await getAllByType("Stage"));
+  let x = await getAllByType("Stage");
+  console.log(x);
 };
 
 getAll();

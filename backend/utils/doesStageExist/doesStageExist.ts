@@ -7,10 +7,7 @@ const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
  * @param stageName - The stage name to check for (Questionnaire, Set Up Profile, etc.)
  * @returns true or false
  */
-const doesStageExist = async (
-  funnelId: string,
-  stageName: string
-): Promise<boolean | { message: string }> => {
+const doesStageExist = async (funnelId: string, stageName: string) => {
   const params = {
     TableName: "OpenATS", // TODO switch to parameter store?
     Key: {
@@ -19,14 +16,7 @@ const doesStageExist = async (
     },
   };
 
-  try {
-    const response = await dynamodb.getItem(params);
-    return response.Item ? true : false;
-  } catch (error) {
-    console.error(error);
-    return {
-      message: `An error occurred checking if a funnel exists ${error.message}`,
-    };
-  }
+  const response = await dynamodb.getItem(params);
+  return response.Item ? true : false;
 };
 export default doesStageExist;

@@ -33,7 +33,7 @@ const ApplicantSchema = Joi.object({
 // TODO add applicant types once schema has been laid out
 // Fountain just uses a 'data' attribute and all custom data fields go in there
 // Might be a good idea
-const createApplicant = async (applicant): Promise<{ message: string }> => {
+const createApplicant = async (applicant): object => {
   // TS will yell at you in the meantime btw
   if (!applicant)
     return {
@@ -47,7 +47,7 @@ const createApplicant = async (applicant): Promise<{ message: string }> => {
   const applicantId = nanoid(idLength);
   // TODO check if stage exists first
   // TODO update ^ has been created, just need to import
-  const dynamoDBParams = {
+  const params = {
     Item: {
       PK: { S: applicantId },
       SK: { S: applicantId },
@@ -67,15 +67,13 @@ const createApplicant = async (applicant): Promise<{ message: string }> => {
   };
 
   try {
-    await dynamodb.putItem(dynamoDBParams);
+    await dynamodb.putItem(params);
     return {
       message: "Applicant created succesfully!",
     };
   } catch (error) {
     console.error(error);
-    return {
-      message: `An error occurred creating your applicant ${error.message}`,
-    };
+    console.error(`An error occurred creating your applicant ${error.message}`);
   }
 };
 

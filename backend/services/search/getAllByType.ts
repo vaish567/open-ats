@@ -9,35 +9,33 @@
  * Querying 4 million applicants = $0.00000025 * 20,000 = $0.005
  * Soooooo... do with that what you will. Use with caution.
  * TODO will Lambda's timeout even let you do that many queries? lol
- *
  */
 
 import { AttributeValue, DynamoDB } from "@aws-sdk/client-dynamodb";
 const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
 import * as Joi from "joi";
 const validSearches: string[] = ["Applicant", "Stage", "Funnel", "Question"];
-const joiConfig = {
-  abortEarly: false,
-  errors: {
-    wrap: {
-      label: "''",
-    },
-  },
-};
-// Results, if found, will be in an array. Errors will be a message containing the error
+
 const getAllByType = async (
   searchTerm: "Applicant" | "Stage" | "Funnel" | "Question"
-): Promise<{ message: string } | any[]> => {
+) => {
   const validation = Joi.string()
     .required()
     .valid(...validSearches)
-    .validate(searchTerm);
+    .validate(searchTerm, {
+      abortEarly: false,
+      errors: {
+        wrap: {
+          label: "''",
+        },
+      },
+    });
 
-  if (validation.error)
+  if (validation.error) {
     return {
       message: `ERROR: ${validation.error.message}`,
     };
-
+  }
   interface DBParams {
     TableName: string;
     IndexName: string;
@@ -46,7 +44,7 @@ const getAllByType = async (
     ExpressionAttributeValues?: {};
     ExclusiveStartKey?: { [key: string]: AttributeValue } | undefined;
   } // TODO use in function params
-  const dynamoDBParams: DBParams = {
+  let params: DBParams = {
     TableName: "OpenATS",
     IndexName: "AllByType",
     KeyConditionExpression: "#type = :v_type",
@@ -60,11 +58,11 @@ const getAllByType = async (
   };
   try {
     let results: any[] = [];
-    const data = await dynamodb.query(dynamoDBParams);
+    let data = await dynamodb.query(params);
     do {
       if (!data.Items) return { message: `${searchTerm} not found` };
       data.Items.forEach((item) => results.push(item));
-      dynamoDBParams.ExclusiveStartKey = data.LastEvaluatedKey;
+      params.ExclusiveStartKey = data.LastEvaluatedKey;
       // Keep querying to get ALL results
     } while (typeof data.LastEvaluatedKey !== "undefined");
     return results;

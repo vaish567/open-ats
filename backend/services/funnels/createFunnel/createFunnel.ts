@@ -35,8 +35,8 @@ const createFunnel = async (funnel: {
       isFixed: Joi.bool().required(), // TODO
       type: Joi.valid(...salaryTypes).required(), // TODO ------- some of these shouldn't be required
       lowEnd: Joi.string().required(), // TODO  ----------------  due to the different salary types
-      fixed: Joi.string().required(), // TODO ------------------ If pay type = Salary,
-      highEnd: Joi.string().required(), // TODO ---------------- then only 'fixed' should be here
+      fixed: Joi.string().required(), // TODO ------------------ If Salary = should be 'fixed' only
+      highEnd: Joi.string().required(), // TODO
       currency: Joi.string().length(3).required(), // TODO
     }),
   });
@@ -48,8 +48,8 @@ const createFunnel = async (funnel: {
     };
   }
 
-  const newFunnelId: string = nanoid(idLength);
-  const dynamoDBParams = {
+  const newFunnelId = nanoid(idLength);
+  const params = {
     Item: {
       PK: { S: newFunnelId },
       SK: { S: newFunnelId },
@@ -72,7 +72,7 @@ const createFunnel = async (funnel: {
     TableName: "OpenATS", // TODO move to parameter store?
   };
   try {
-    await dynamodb.putItem(dynamoDBParams);
+    await dynamodb.putItem(params);
     return { message: `Funnel  ${funnel.title} created!` };
   } catch (error) {
     console.error(error);
