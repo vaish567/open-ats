@@ -4,8 +4,6 @@
 
 [Website](https://openats.app)
 
-[Roadmap](https://trello.com/b/iBMcfzJS/openats-kanban)
-
 OpenATS is an attempt to create a modern, ⚡ serverless ⚡, event driven implementation of your typical applicant tracking system.
 
 FYI: I will be using the term 'funnel' instead of 'job'. The reason for this is that a 'job' does not have to be a solid title like '_Engineer_'. It could instead refer to a city in which a food delivery company might operate in and 'job' doesn't fit this use case.
