@@ -37,69 +37,77 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
-var Joi = require("joi");
-var nanoid_1 = require("nanoid");
-var idLength = 25;
 var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
+var nanoid_1 = require("nanoid");
+var Joi = require("joi");
+var idLength = 25;
+var descriptionMaxLength = 2000;
+var salaryTypes = ["Salary", "Hourly", "Dynamic"];
+var JoiConfig = {
+    abortEarly: false,
+    errors: {
+        wrap: {
+            label: "''",
+        },
+    },
+};
 var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, function () {
-    var FunnelSchema, validation, newFunnelId, params, x, error_1;
+    var FunnelSchema, validation, newFunnelId, params, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                console.log("Creating funnel");
                 FunnelSchema = Joi.object({
                     title: Joi.string().required(),
-                    locations: Joi.array().items(Joi.string()).default(["Remote"]),
-                    description: Joi.string()
-                        .max(2000)
-                        .default("This job does not have a description"),
+                    locations: Joi.array().items(Joi.string()).required(),
+                    description: Joi.string().max(descriptionMaxLength).required(),
+                    pay: Joi.object({
+                        isFixed: Joi.bool().required(),
+                        type: Joi.valid.apply(Joi, salaryTypes).required(),
+                        lowEnd: Joi.string().required(),
+                        fixed: Joi.string().required(),
+                        highEnd: Joi.string().required(),
+                        currency: Joi.string().length(3).required(),
+                    }),
                 });
-                validation = FunnelSchema.validate(funnel, {
-                    abortEarly: false,
-                    errors: {
-                        wrap: {
-                            label: "''",
-                        },
-                    },
-                });
+                validation = FunnelSchema.validate(funnel, JoiConfig);
                 if (validation.error) {
                     return [2 /*return*/, {
                             message: "ERROR: " + validation.error.message,
                         }];
                 }
-                newFunnelId = nanoid_1.nanoid(idLength).toString();
+                newFunnelId = nanoid_1.nanoid(idLength);
                 params = {
                     Item: {
                         PK: { S: newFunnelId },
                         SK: { S: newFunnelId },
                         TYPE: { S: "Funnel" },
                         LOCATIONS: { SS: funnel.locations },
-                        SALARY_RANGE: {
+                        PAY_RANGE: {
                             M: {
                                 isFixed: { BOOL: false },
-                                type: { S: "Salary" },
-                                lowEnd: { S: "90,000" },
-                                highEnd: { S: "170,000" },
-                                fixed: { S: "150,000" },
-                                currency: { S: "USD" },
+                                type: { S: funnel.pay.type },
+                                lowEnd: { S: funnel.pay.lowEnd },
+                                highEnd: { S: funnel.pay.highEnd },
+                                fixed: { S: funnel.pay.fixed },
+                                currency: { S: funnel.pay.currency },
                             },
                         },
                         DESCRIPTION: { S: funnel.description },
                         FUNNEL_ID: { S: newFunnelId },
                         FUNNEL_TITLE: { S: funnel.title },
                     },
-                    TableName: "OpenATS",
+                    TableName: "OpenATS", // TODO move to parameter store?
                 };
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, dynamodb.putItem(params)];
             case 2:
-                x = _a.sent();
-                console.log(x);
+                _a.sent();
                 return [2 /*return*/, { message: "Funnel  " + funnel.title + " created!" }];
             case 3:
                 error_1 = _a.sent();
+                console.error(error_1);
                 return [2 /*return*/, {
                         message: "An error occurred creating your funnel " + error_1.message,
                     }];

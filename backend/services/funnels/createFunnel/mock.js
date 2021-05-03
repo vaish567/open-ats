@@ -48,7 +48,19 @@ var create = function () { return __awaiter(void 0, void 0, void 0, function () 
                     description: "Come work for us!",
                 };
                 _b = (_a = console).log;
-                return [4 /*yield*/, createFunnel_1.default(newFunnel)];
+                return [4 /*yield*/, createFunnel_1.default({
+                        title: "Wiretapper",
+                        description: "You will be responsible for wiretapping everyone",
+                        locations: ["Remote", "NYC"],
+                        pay: {
+                            isFixed: true,
+                            type: "Salary",
+                            lowEnd: "37,000",
+                            highEnd: "58,000",
+                            fixed: "45,000",
+                            currency: "USD",
+                        },
+                    })];
             case 1:
                 _b.apply(_a, [_c.sent()]);
                 return [2 /*return*/];
