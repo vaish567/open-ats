@@ -32,27 +32,24 @@ The DynamoDB access patterns are as follows:
 
 **Primary Index - OpenATS**
 
-- Get an applicant by an ID
-- Get funnel info by ID (_Description, salary, location, etc._)
+- Get an applicant by their ID
+- Get funnel info by funnel ID (_Description, salary, location, etc._)
 - Get a funnel's stages by ID
-  - SK: 'begins_with' = 'STAGE_TITLE#'
+  - SK: 'Begins with' = 'STAGE_TITLE#' (will be used to filter questions / rules for the stages later on)
 
 **GSI: ApplicantsByFunnelByStage**
 
 - Get all applicants in a funnel
 - Get all applicants in a funnel in a specific stage
-- Get all applicants in a funnel in a specific stage... that are over 21! And have their own car!
-  - Just do a filter expression here
+  - We can filter then here for applicant attributes
 
 **GSI: AllByType**
 
 - Get all records of a certain type
-
-  - SK: 'begins_with' = 'YOUR_TYPE#'
-
-  Essentially a mini scan but has some small use cases. Also allows us to do basic name search as well via the SK generic name we made. I chose to leave it lowercase across the board to deal with names that have a capital in the middle like DeBrie
+  - PK: Applicant || Stage || Funnel etc.
 
 **GSI: AllApplicantsInASpecificStage**
 
 - Get all applicants across all funnels in a specific stage
+  - PK is a stage name STAGE_NAME#(name here)
   - SK is an ISO 8601 timestamp of their creation date. Set >= beginning of time to get all records lol
