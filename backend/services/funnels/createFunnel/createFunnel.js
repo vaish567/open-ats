@@ -97,7 +97,7 @@ var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, 
             case 2:
                 x = _a.sent();
                 console.log(x);
-                return [2 /*return*/, { message: "Funnel  'funnel name here' created!" }];
+                return [2 /*return*/, { message: "Funnel  " + funnel.title + " created!" }];
             case 3:
                 error_1 = _a.sent();
                 return [2 /*return*/, {

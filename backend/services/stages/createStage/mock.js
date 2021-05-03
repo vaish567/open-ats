@@ -36,10 +36,34 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
-var idLength = 25;
-var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
-var createStage = function () { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/];
-}); }); };
-exports.default = createStage;
+var createStage_1 = require("./createStage");
+var getAllByType_1 = require("../../getAllByType/getAllByType");
+var create = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var allFunnels, desiredFunnelId, funnelId, funnelTitle, stage, _a, _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0: return [4 /*yield*/, getAllByType_1.default("Funnel")];
+            case 1:
+                allFunnels = _c.sent();
+                desiredFunnelId = allFunnels.filter(function (funnel) {
+                    return funnel.FUNNEL_TITLE.S == "Software Engineer";
+                });
+                console.log(allFunnels);
+                funnelId = desiredFunnelId[0].FUNNEL_ID.S;
+                funnelTitle = desiredFunnelId[0].FUNNEL_TITLE.S;
+                stage = {
+                    PK: "dsad",
+                    SK: "sdsa",
+                    FUNNEL_ID: funnelId,
+                    TITLE: "Final Review",
+                    FUNNEL_TITLE: funnelTitle,
+                };
+                _b = (_a = console).log;
+                return [4 /*yield*/, createStage_1.default(stage)];
+            case 2:
+                _b.apply(_a, [_c.sent()]);
+                return [2 /*return*/];
+        }
+    });
+}); };
+create();
