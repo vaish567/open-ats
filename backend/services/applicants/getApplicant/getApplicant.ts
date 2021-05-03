@@ -4,7 +4,6 @@ import { DynamoDB } from "@aws-sdk/client-dynamodb";
 const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
 
 const getApplicant = async (id: string) => {
-  if (!id) return { message: `ERROR: 'id' is required` };
   const validation = Joi.string()
     .required()
     .length(idLength)
@@ -17,11 +16,8 @@ const getApplicant = async (id: string) => {
       },
     });
 
-  if (validation.error) {
-    return {
-      message: `ERROR: ${validation.error.message}`,
-    };
-  }
+  if (validation.error)
+    return { message: `ERROR: ${validation.error.message}` };
 
   const params = {
     Key: {
@@ -32,7 +28,7 @@ const getApplicant = async (id: string) => {
         S: `APPLICANT#${id}`,
       },
     },
-    TableName: "OpenATS",
+    TableName: "OpenATS", // TODO use parameter store?
   };
   try {
     const data = await dynamodb.getItem(params);

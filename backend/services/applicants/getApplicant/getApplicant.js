@@ -45,8 +45,6 @@ var getApplicant = function (id) { return __awaiter(void 0, void 0, void 0, func
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!id)
-                    return [2 /*return*/, { message: "ERROR: 'id' is required" }];
                 validation = Joi.string()
                     .required()
                     .length(idLength)
@@ -58,11 +56,8 @@ var getApplicant = function (id) { return __awaiter(void 0, void 0, void 0, func
                         },
                     },
                 });
-                if (validation.error) {
-                    return [2 /*return*/, {
-                            message: "ERROR: " + validation.error.message,
-                        }];
-                }
+                if (validation.error)
+                    return [2 /*return*/, { message: "ERROR: " + validation.error.message }];
                 params = {
                     Key: {
                         PK: {
@@ -72,7 +67,7 @@ var getApplicant = function (id) { return __awaiter(void 0, void 0, void 0, func
                             S: "APPLICANT#" + id,
                         },
                     },
-                    TableName: "OpenATS",
+                    TableName: "OpenATS", // TODO use parameter store?
                 };
                 _a.label = 1;
             case 1:

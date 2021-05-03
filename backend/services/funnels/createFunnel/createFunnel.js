@@ -42,7 +42,7 @@ var nanoid_1 = require("nanoid");
 var Joi = require("joi");
 var idLength = 25;
 var descriptionMaxLength = 2000;
-var salaryTypes = ["Salary", "Hourly", "Dynamic"];
+var salaryTypes = ["Salary", "Hourly", "Dynamic"]; // TODO change to 'Pay' types once Dynamo schema has been changed
 var JoiConfig = {
     abortEarly: false,
     errors: {
@@ -90,7 +90,7 @@ var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, 
                                 lowEnd: { S: funnel.pay.lowEnd },
                                 highEnd: { S: funnel.pay.highEnd },
                                 fixed: { S: funnel.pay.fixed },
-                                currency: { S: funnel.pay.currency },
+                                currency: { S: funnel.pay.currency }, // TODO destructure this
                             },
                         },
                         DESCRIPTION: { S: funnel.description },

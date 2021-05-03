@@ -43,7 +43,7 @@ const getAllByType = async (
     ExpressionAttributeNames?: {};
     ExpressionAttributeValues?: {};
     ExclusiveStartKey?: { [key: string]: AttributeValue } | undefined;
-  }
+  } // TODO use in function params
   let params: DBParams = {
     TableName: "OpenATS",
     IndexName: "AllByType",

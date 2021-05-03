@@ -41,6 +41,14 @@ var Joi = require("joi");
 var nanoid_1 = require("nanoid");
 var idLength = 25;
 var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
+var joiConfig = {
+    abortEarly: false,
+    errors: {
+        wrap: {
+            label: "''",
+        },
+    },
+};
 var ApplicantSchema = Joi.object({
     email: Joi.string().email().required(),
     first_name: Joi.string().required().max(50),
@@ -52,28 +60,22 @@ var ApplicantSchema = Joi.object({
     funnel_id: Joi.string(),
     stage: Joi.string(),
 }).and("email", "first_name", "last_name", "phone_number", "stage", "funnel_id");
+// TODO add applicant types once schema has been laid out
+// Fountain just uses a 'data' attribute and all custom data fields go in there
+// Might be a good idea
 var createApplicant = function (applicant) { return __awaiter(void 0, void 0, void 0, function () {
     var validation, applicantId, params, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
+                // TS will yell at you in the meantime btw
                 if (!applicant)
                     return [2 /*return*/, {
-                            message: "ERROR: 'applicant' is required",
+                            message: "ERROR: 'applicant' is required", // TODO Joi can take care of this i :thonk:
                         }];
-                validation = ApplicantSchema.validate(applicant, {
-                    abortEarly: false,
-                    errors: {
-                        wrap: {
-                            label: "''",
-                        },
-                    },
-                });
-                if (validation.error) {
-                    return [2 /*return*/, {
-                            message: "ERROR: " + validation.error.message,
-                        }];
-                }
+                validation = ApplicantSchema.validate(applicant, joiConfig);
+                if (validation.error)
+                    return [2 /*return*/, { message: "ERROR: " + validation.error.message }];
                 applicantId = nanoid_1.nanoid(idLength);
                 params = {
                     Item: {
@@ -91,7 +93,7 @@ var createApplicant = function (applicant) { return __awaiter(void 0, void 0, vo
                         FULL_NAME: { S: applicant.first_name + " " + applicant.last_name },
                         PHONE_NUMBER: { S: applicant.phone_number },
                     },
-                    TableName: "OpenATS",
+                    TableName: "OpenATS", // TODO parameter store???
                 };
                 _a.label = 1;
             case 1:
@@ -104,6 +106,8 @@ var createApplicant = function (applicant) { return __awaiter(void 0, void 0, vo
                     }];
             case 3:
                 error_1 = _a.sent();
+                console.error(error_1);
+                console.error("An error occurred creating your applicant " + error_1.message);
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }

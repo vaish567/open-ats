@@ -4,7 +4,7 @@ import { nanoid } from "nanoid";
 import * as Joi from "joi";
 const idLength = 25;
 const descriptionMaxLength = 2000;
-const salaryTypes = ["Salary", "Hourly", "Dynamic"];
+const salaryTypes = ["Salary", "Hourly", "Dynamic"]; // TODO change to 'Pay' types once Dynamo schema has been changed
 const JoiConfig = {
   abortEarly: false,
   errors: {
@@ -33,9 +33,9 @@ const createFunnel = async (funnel: {
     pay: Joi.object({
       // TODO
       isFixed: Joi.bool().required(), // TODO
-      type: Joi.valid(...salaryTypes).required(), // TODO some of these shouldn't be required due to the differen't salary types
-      lowEnd: Joi.string().required(), // TODO
-      fixed: Joi.string().required(), // TODO
+      type: Joi.valid(...salaryTypes).required(), // TODO ------- some of these shouldn't be required
+      lowEnd: Joi.string().required(), // TODO  ----------------  due to the different salary types
+      fixed: Joi.string().required(), // TODO ------------------ If Salary = should be 'fixed' only
       highEnd: Joi.string().required(), // TODO
       currency: Joi.string().length(3).required(), // TODO
     }),
@@ -57,12 +57,12 @@ const createFunnel = async (funnel: {
       LOCATIONS: { SS: funnel.locations },
       PAY_RANGE: {
         M: {
-          isFixed: { BOOL: false },
-          type: { S: funnel.pay.type },
-          lowEnd: { S: funnel.pay.lowEnd },
-          highEnd: { S: funnel.pay.highEnd },
-          fixed: { S: funnel.pay.fixed },
-          currency: { S: funnel.pay.currency },
+          isFixed: { BOOL: false }, // TODO destructure this, also, some might be optional. hmm :thonk:
+          type: { S: funnel.pay.type }, // TODO destructure this
+          lowEnd: { S: funnel.pay.lowEnd }, // TODO destructure this
+          highEnd: { S: funnel.pay.highEnd }, // TODO destructure this
+          fixed: { S: funnel.pay.fixed }, // TODO destructure this
+          currency: { S: funnel.pay.currency }, // TODO destructure this
         },
       },
       DESCRIPTION: { S: funnel.description },
