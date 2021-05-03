@@ -1,7 +1,6 @@
 import { DynamoDB } from "@aws-sdk/client-dynamodb";
 import * as Joi from "joi";
 import { nanoid } from "nanoid";
-import { create } from "node:domain";
 const idLength = 25;
 
 const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
