@@ -36,23 +36,31 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var createApplicant_1 = require("./createApplicant");
+var createStage_1 = require("./createStage");
+var getAllByType_1 = require("../../getAllByType/getAllByType");
 var create = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var applicant, _a, _b;
+    var allFunnels, desiredFunnelId, funnelId, funnelTitle, stage, _a, _b;
     return __generator(this, function (_c) {
         switch (_c.label) {
-            case 0:
-                applicant = {
-                    email: "josev@openats.app",
-                    first_name: "Jose",
-                    last_name: "Valerio",
-                    phone_number: "4831284473",
-                    stage: "Ready To Drive",
-                    funnel_id: "123",
+            case 0: return [4 /*yield*/, getAllByType_1.default("Funnel")];
+            case 1:
+                allFunnels = _c.sent();
+                desiredFunnelId = allFunnels.filter(function (funnel) {
+                    return funnel.FUNNEL_TITLE.S == "Software Engineer";
+                });
+                console.log(allFunnels);
+                funnelId = desiredFunnelId[0].FUNNEL_ID.S;
+                funnelTitle = desiredFunnelId[0].FUNNEL_TITLE.S;
+                stage = {
+                    PK: "dsad",
+                    SK: "sdsa",
+                    FUNNEL_ID: funnelId,
+                    TITLE: "Final Review",
+                    FUNNEL_TITLE: funnelTitle,
                 };
                 _b = (_a = console).log;
-                return [4 /*yield*/, createApplicant_1.default(applicant)];
-            case 1:
+                return [4 /*yield*/, createStage_1.default(stage)];
+            case 2:
                 _b.apply(_a, [_c.sent()]);
                 return [2 /*return*/];
         }

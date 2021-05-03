@@ -36,16 +36,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getApplicant = void 0;
 var Joi = require("joi");
-var idLength = 20;
+var idLength = 25;
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
 var getApplicant = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-    var validation, params, data, _a, FIRST_NAME, LAST_NAME, EMAIL, PHONE_NUMBER, APPLICANT_ID, FULL_NAME, CURRENT_FUNNEL, CURRENT_STAGE, CREATED_AT, FILES, applicantID, funnel, stage, applicant, error_1;
-    var _b, _c, _d;
-    return __generator(this, function (_e) {
-        switch (_e.label) {
+    var validation, params, data, error_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
             case 0:
                 if (!id)
                     return [2 /*return*/, { message: "ERROR: 'id' is required" }];
@@ -76,42 +74,21 @@ var getApplicant = function (id) { return __awaiter(void 0, void 0, void 0, func
                     },
                     TableName: "OpenATS",
                 };
-                _e.label = 1;
+                _a.label = 1;
             case 1:
-                _e.trys.push([1, 3, , 4]);
+                _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, dynamodb.getItem(params)];
             case 2:
-                data = _e.sent();
+                data = _a.sent();
                 if (!data.Item)
                     return [2 /*return*/, { message: "Applicant not found" }];
-                _a = data.Item, FIRST_NAME = _a.FIRST_NAME, LAST_NAME = _a.LAST_NAME, EMAIL = _a.EMAIL, PHONE_NUMBER = _a.PHONE_NUMBER, APPLICANT_ID = _a.APPLICANT_ID, FULL_NAME = _a.FULL_NAME, CURRENT_FUNNEL = _a.CURRENT_FUNNEL, CURRENT_STAGE = _a.CURRENT_STAGE, CREATED_AT = _a.CREATED_AT, FILES = _a.FILES;
-                applicantID = APPLICANT_ID
-                    ? (_b = APPLICANT_ID.S) === null || _b === void 0 ? void 0 : _b.split("APPLICANT#")[1]
-                    : undefined;
-                funnel = CURRENT_FUNNEL
-                    ? (_c = CURRENT_FUNNEL.S) === null || _c === void 0 ? void 0 : _c.split("FUNNEL#")[1]
-                    : undefined;
-                stage = CURRENT_STAGE
-                    ? (_d = CURRENT_STAGE.S) === null || _d === void 0 ? void 0 : _d.split("STAGE#")[1]
-                    : undefined;
-                applicant = {
-                    first_name: FIRST_NAME ? FIRST_NAME.S : undefined,
-                    last_name: LAST_NAME ? LAST_NAME.S : undefined,
-                    email: EMAIL ? EMAIL.S : undefined,
-                    phone_number: PHONE_NUMBER ? PHONE_NUMBER.S : undefined,
-                    id: applicantID ? applicantID : undefined,
-                    full_name: FULL_NAME ? FULL_NAME.S : undefined,
-                    funnel: funnel ? funnel : undefined,
-                    stage: stage ? stage : undefined,
-                    created_at: CREATED_AT ? CREATED_AT.S : undefined,
-                    files: FILES ? FILES.M : undefined,
-                };
-                return [2 /*return*/, applicant];
+                return [2 /*return*/, data.Item];
             case 3:
-                error_1 = _e.sent();
+                error_1 = _a.sent();
+                console.error("Error getting applicant by id " + id, error_1);
                 return [2 /*return*/, { message: "ERROR: " + error_1.message }];
             case 4: return [2 /*return*/];
         }
     });
 }); };
-exports.getApplicant = getApplicant;
+exports.default = getApplicant;

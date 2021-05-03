@@ -41,27 +41,20 @@ var Joi = require("joi");
 var nanoid_1 = require("nanoid");
 var idLength = 25;
 var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
-var ApplicantSchema = Joi.object({
-    email: Joi.string().email().required(),
-    first_name: Joi.string().required().max(50),
-    last_name: Joi.string().required().max(50),
-    phone_number: Joi.string()
-        .length(10)
-        .pattern(/^[0-9]+$/)
-        .required(),
-    funnel_id: Joi.string(),
-    stage: Joi.string(),
-}).and("email", "first_name", "last_name", "phone_number", "stage", "funnel_id");
-var createApplicant = function (applicant) { return __awaiter(void 0, void 0, void 0, function () {
-    var validation, applicantId, params, error_1;
+var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, function () {
+    var FunnelSchema, validation, newFunnelId, params, x, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!applicant)
-                    return [2 /*return*/, {
-                            message: "ERROR: 'applicant' is required",
-                        }];
-                validation = ApplicantSchema.validate(applicant, {
+                console.log("Creating funnel");
+                FunnelSchema = Joi.object({
+                    title: Joi.string().required(),
+                    locations: Joi.array().items(Joi.string()).default(["Remote"]),
+                    description: Joi.string()
+                        .max(2000)
+                        .default("This job does not have a description"),
+                });
+                validation = FunnelSchema.validate(funnel, {
                     abortEarly: false,
                     errors: {
                         wrap: {
@@ -74,22 +67,26 @@ var createApplicant = function (applicant) { return __awaiter(void 0, void 0, vo
                             message: "ERROR: " + validation.error.message,
                         }];
                 }
-                applicantId = nanoid_1.nanoid(idLength);
+                newFunnelId = nanoid_1.nanoid(idLength).toString();
                 params = {
                     Item: {
-                        PK: { S: applicantId },
-                        SK: { S: applicantId },
-                        TYPE: { S: "Applicant" },
-                        APPLICANT_ID: { S: applicantId },
-                        CREATED_AT: { S: new Date().toISOString() },
-                        CURRENT_FUNNEL_ID: { S: "vlXTvxE9xOYpuNZfXDZuEQHFV" },
-                        CURRENT_FUNNEL_TITLE: { S: "Software Engineer" },
-                        CURRENT_STAGE_TITLE: { S: "STAGE_TITLE#" + applicant.stage },
-                        EMAIL: { S: applicant.email },
-                        FIRST_NAME: { S: applicant.first_name },
-                        LAST_NAME: { S: applicant.last_name },
-                        FULL_NAME: { S: applicant.first_name + " " + applicant.last_name },
-                        PHONE_NUMBER: { S: applicant.phone_number },
+                        PK: { S: newFunnelId },
+                        SK: { S: newFunnelId },
+                        TYPE: { S: "Funnel" },
+                        LOCATIONS: { SS: funnel.locations },
+                        SALARY_RANGE: {
+                            M: {
+                                isFixed: { BOOL: false },
+                                type: { S: "Salary" },
+                                lowEnd: { S: "90,000" },
+                                highEnd: { S: "170,000" },
+                                fixed: { S: "150,000" },
+                                currency: { S: "USD" },
+                            },
+                        },
+                        DESCRIPTION: { S: funnel.description },
+                        FUNNEL_ID: { S: newFunnelId },
+                        FUNNEL_TITLE: { S: funnel.title },
                     },
                     TableName: "OpenATS",
                 };
@@ -98,15 +95,16 @@ var createApplicant = function (applicant) { return __awaiter(void 0, void 0, vo
                 _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, dynamodb.putItem(params)];
             case 2:
-                _a.sent();
-                return [2 /*return*/, {
-                        message: "Applicant created succesfully!",
-                    }];
+                x = _a.sent();
+                console.log(x);
+                return [2 /*return*/, { message: "Funnel  " + funnel.title + " created!" }];
             case 3:
                 error_1 = _a.sent();
-                return [3 /*break*/, 4];
+                return [2 /*return*/, {
+                        message: "An error occurred creating your funnel " + error_1.message,
+                    }];
             case 4: return [2 /*return*/];
         }
     });
 }); };
-exports.default = createApplicant;
+exports.default = createFunnel;

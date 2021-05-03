@@ -27,4 +27,4 @@ const deleteApplicant = (id: string) => {
   };
 };
 
-export { deleteApplicant as deleteApplicant };
+export default deleteApplicant;

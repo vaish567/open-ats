@@ -1,23 +1,15 @@
-import { createApplicant } from "./createApplicant";
+import createApplicant from "./createApplicant";
 
-// Succesfull
-console.log("Succesful:");
+const create = async () => {
+  const applicant = {
+    email: "josev@openats.app",
+    first_name: "Jose",
+    last_name: "Valerio",
+    phone_number: "4831284473",
+    stage: "Ready To Drive",
+    funnel_id: "123",
+  };
+  console.log(await createApplicant(applicant));
+};
 
-// Failures
-console.log("\nFailures:");
-const failStates = [
-  [],
-  {},
-  "",
-  "ad2f2",
-  423423,
-  null,
-  {
-    email: "trombone",
-    first_name: 32423,
-    last_name:
-      "uhfdaiouhfoiahfuiyhdufyadfuya09fdyua09s7duy0a98s7duy0a9s8dua09suyd90asuy97dysa90dyas9dy9syaud",
-  },
-];
-
-failStates.forEach((state: any) => console.log(createApplicant(state)));
+create();

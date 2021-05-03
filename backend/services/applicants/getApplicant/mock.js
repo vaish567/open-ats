@@ -45,7 +45,7 @@ var get = function () { return __awaiter(void 0, void 0, void 0, function () {
                 // Succesfull
                 console.log("Success:");
                 _b = (_a = console).log;
-                return [4 /*yield*/, getApplicant_1.getApplicant("3")];
+                return [4 /*yield*/, getApplicant_1.default("3")];
             case 1:
                 _b.apply(_a, [_e.sent()]);
                 // Failures
@@ -57,7 +57,7 @@ var get = function () { return __awaiter(void 0, void 0, void 0, function () {
                 if (!(_i < failStates_1.length)) return [3 /*break*/, 5];
                 state = failStates_1[_i];
                 _d = (_c = console).log;
-                return [4 /*yield*/, getApplicant_1.getApplicant(state)];
+                return [4 /*yield*/, getApplicant_1.default(state)];
             case 3:
                 _d.apply(_c, [_e.sent()]);
                 _e.label = 4;

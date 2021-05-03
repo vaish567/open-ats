@@ -37,59 +37,20 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
-var Joi = require("joi");
-var nanoid_1 = require("nanoid");
 var idLength = 25;
 var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
-var ApplicantSchema = Joi.object({
-    email: Joi.string().email().required(),
-    first_name: Joi.string().required().max(50),
-    last_name: Joi.string().required().max(50),
-    phone_number: Joi.string()
-        .length(10)
-        .pattern(/^[0-9]+$/)
-        .required(),
-    funnel_id: Joi.string(),
-    stage: Joi.string(),
-}).and("email", "first_name", "last_name", "phone_number", "stage", "funnel_id");
-var createApplicant = function (applicant) { return __awaiter(void 0, void 0, void 0, function () {
-    var validation, applicantId, params, error_1;
+var createStage = function (stage) { return __awaiter(void 0, void 0, void 0, function () {
+    var params, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!applicant)
-                    return [2 /*return*/, {
-                            message: "ERROR: 'applicant' is required",
-                        }];
-                validation = ApplicantSchema.validate(applicant, {
-                    abortEarly: false,
-                    errors: {
-                        wrap: {
-                            label: "''",
-                        },
-                    },
-                });
-                if (validation.error) {
-                    return [2 /*return*/, {
-                            message: "ERROR: " + validation.error.message,
-                        }];
-                }
-                applicantId = nanoid_1.nanoid(idLength);
                 params = {
                     Item: {
-                        PK: { S: applicantId },
-                        SK: { S: applicantId },
-                        TYPE: { S: "Applicant" },
-                        APPLICANT_ID: { S: applicantId },
-                        CREATED_AT: { S: new Date().toISOString() },
-                        CURRENT_FUNNEL_ID: { S: "vlXTvxE9xOYpuNZfXDZuEQHFV" },
-                        CURRENT_FUNNEL_TITLE: { S: "Software Engineer" },
-                        CURRENT_STAGE_TITLE: { S: "STAGE_TITLE#" + applicant.stage },
-                        EMAIL: { S: applicant.email },
-                        FIRST_NAME: { S: applicant.first_name },
-                        LAST_NAME: { S: applicant.last_name },
-                        FULL_NAME: { S: applicant.first_name + " " + applicant.last_name },
-                        PHONE_NUMBER: { S: applicant.phone_number },
+                        PK: { S: stage.FUNNEL_ID },
+                        FUNNEL_ID: { S: stage.FUNNEL_ID },
+                        FUNNEL_TITLE: { S: "FUNNEL_TITLE#" + stage.FUNNEL_TITLE },
+                        SK: { S: "STAGE_TITLE#" + stage.TITLE },
+                        TYPE: { S: "Stage" },
                     },
                     TableName: "OpenATS",
                 };
@@ -99,14 +60,14 @@ var createApplicant = function (applicant) { return __awaiter(void 0, void 0, vo
                 return [4 /*yield*/, dynamodb.putItem(params)];
             case 2:
                 _a.sent();
-                return [2 /*return*/, {
-                        message: "Applicant created succesfully!",
-                    }];
+                return [2 /*return*/, { message: "Succesfully created stage " + stage.TITLE }];
             case 3:
                 error_1 = _a.sent();
-                return [3 /*break*/, 4];
+                return [2 /*return*/, {
+                        message: "An error occurred creating your stage - " + error_1.message,
+                    }];
             case 4: return [2 /*return*/];
         }
     });
 }); };
-exports.default = createApplicant;
+exports.default = createStage;

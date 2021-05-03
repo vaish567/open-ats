@@ -36,22 +36,19 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var createApplicant_1 = require("./createApplicant");
+var createFunnel_1 = require("./createFunnel");
 var create = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var applicant, _a, _b;
+    var newFunnel, _a, _b;
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
-                applicant = {
-                    email: "josev@openats.app",
-                    first_name: "Jose",
-                    last_name: "Valerio",
-                    phone_number: "4831284473",
-                    stage: "Ready To Drive",
-                    funnel_id: "123",
+                newFunnel = {
+                    title: "Boston",
+                    locations: ["Remote"],
+                    description: "Come work for us!",
                 };
                 _b = (_a = console).log;
-                return [4 /*yield*/, createApplicant_1.default(applicant)];
+                return [4 /*yield*/, createFunnel_1.default(newFunnel)];
             case 1:
                 _b.apply(_a, [_c.sent()]);
                 return [2 /*return*/];

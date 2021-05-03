@@ -1,8 +1,10 @@
-// import Joi = require("joi");
-import { nanoid } from "nanoid";
+import { DynamoDB } from "@aws-sdk/client-dynamodb";
 import * as Joi from "joi";
+import { nanoid } from "nanoid";
+const idLength = 25;
 
-const idLength = 20;
+const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
+
 const ApplicantSchema = Joi.object({
   email: Joi.string().email().required(),
   first_name: Joi.string().required().max(50),
@@ -11,22 +13,18 @@ const ApplicantSchema = Joi.object({
     .length(10)
     .pattern(/^[0-9]+$/)
     .required(),
-  funnel: Joi.string(),
+  funnel_id: Joi.string(),
   stage: Joi.string(),
-  location: Joi.array().items(Joi.string()),
-}).and("email", "first_name", "last_name", "phone_number");
-interface Applicant {
-  /** The email of the applicant */
-  email: string;
-  first_name: string;
-  last_name: string;
-  phone_number: string;
-  funnel?: string;
-  stage?: string;
-  location?: string[];
-}
+}).and(
+  "email",
+  "first_name",
+  "last_name",
+  "phone_number",
+  "stage",
+  "funnel_id"
+);
 
-const createApplicant = (applicant: Applicant): object => {
+const createApplicant = async (applicant): object => {
   if (!applicant)
     return {
       message: `ERROR: 'applicant' is required`,
@@ -45,29 +43,35 @@ const createApplicant = (applicant: Applicant): object => {
       message: `ERROR: ${validation.error.message}`,
     };
   }
-  const {
-    email,
-    first_name,
-    last_name,
-    phone_number,
-    funnel,
-    stage,
-    location,
-  } = applicant;
-  return {
-    message: "Applicant created succesfully!",
-    applicant: {
-      email: email,
-      first_name: first_name,
-      last_name: last_name,
-      id: nanoid(idLength),
-      phone_number: phone_number,
-      funnel: funnel ? funnel : null,
-      stage: stage ? stage : null,
-      location: location ? location : null,
-      created_at: new Date().toISOString(),
+  const applicantId = nanoid(idLength);
+  // TODO check if stage exists first
+
+  let params = {
+    Item: {
+      PK: { S: applicantId },
+      SK: { S: applicantId },
+      TYPE: { S: "Applicant" },
+      APPLICANT_ID: { S: applicantId },
+
+      CREATED_AT: { S: new Date().toISOString() },
+      CURRENT_FUNNEL_ID: { S: "vlXTvxE9xOYpuNZfXDZuEQHFV" }, // TODO get funnel id's first
+      CURRENT_FUNNEL_TITLE: { S: "Software Engineer" }, // TODO get funnel id's first
+      CURRENT_STAGE_TITLE: { S: `STAGE_TITLE#${applicant.stage}` },
+      EMAIL: { S: applicant.email },
+      FIRST_NAME: { S: applicant.first_name },
+      LAST_NAME: { S: applicant.last_name },
+      FULL_NAME: { S: `${applicant.first_name} ${applicant.last_name}` },
+      PHONE_NUMBER: { S: applicant.phone_number },
     },
+    TableName: "OpenATS",
   };
+
+  try {
+    await dynamodb.putItem(params);
+    return {
+      message: "Applicant created succesfully!",
+    };
+  } catch (error) {}
 };
 
-export { createApplicant as createApplicant };
+export default createApplicant;
