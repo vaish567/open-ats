@@ -1,5 +1,5 @@
 import createStage from "./createStage";
-import getAllByType from "../../getAllByType/getAllByType";
+import getAllByType from "../../search/getAllByType";
 const create = async () => {
   let allFunnels: any[] | { message: string } = await getAllByType("Funnel");
   let desiredFunnelId = allFunnels.filter((funnel) => {
