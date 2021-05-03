@@ -1,7 +1,17 @@
-// NOTE
-// NOTE
-// NOTE
-// This is an 'expensive' call
+/**
+ * Note: Depending on your applicant pool, this might be an 'expensive' call to make.
+ * For the sake of argument, let's say each applicant is 5kb in size.
+ * Dynamo charges $.25 for every million calls.
+ * Querying returns a max of 1mb per call.
+ * 4,000,000 applicants * 5kb each = 20,000 mb.
+ * This means, at *minimum*, you will need to make 20,000 calls to Dynamo.
+ * Dynamo price per call = $0.00000025
+ * Querying 4 million applicants = $0.00000025 * 20,000 = $0.005
+ * Soooooo... do with that what you will. Use with caution.
+ * TODO will Lambda's timeout even let you do that many queries? lol
+ */
+//
+// F
 // At 4kb per applicant & 4 million applicants
 // DynamoDB $0.25 per million reads
 // Query returns 1mb / 4kb = 250 applicants per call
