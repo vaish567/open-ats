@@ -13,25 +13,29 @@ const features = [
     description:
       "Customize to your heart's content. Fork it, flip it and reverse it - MIT licensed",
     icon: CodeIcon,
+    iconColor: `bg-gradient-to-r from-green-400 to-green-500`,
     link: "https://github.com/joswayski/OpenATS",
   },
   {
     name: "No servers to manage",
     description:
-      "Worrying about servers is sooooo 5 years ago. We use the Serverless framework to deploy our infastructure",
+      "Worrying about servers is sooooo 5 years ago. Deployment is quick and easy with the Serverless framework",
     icon: LightningBoltIcon,
+    iconColor: `bg-gradient-to-r from-yellow-400 to-yellow-500`,
   },
   {
     name: "Massive throughput",
     description:
-      "Designed for the gig economy in mind. Hire more people without hiccups",
+      "Designed for the gig economy in mind. Hire more people, faster, without hiccups",
     icon: FastForwardIcon,
+    iconColor: `bg-gradient-to-r from-red-400 to-red-500`,
   },
   {
     name: "Developer experience",
     description:
       "N.E.R.D.T. stack (that's a thing right?) Node, Express, React, DynamoDB, TypeScript",
     icon: EmojiHappyIcon,
+    iconColor: `bg-gradient-to-r from-indigo-400 to-indigo-500`,
   },
 ];
 
@@ -84,7 +88,9 @@ export default function Example() {
               {features.map((feature) => (
                 <div key={feature.name}>
                   <dt>
-                    <div className="flex items-center justify-center h-12 w-12 rounded-md bg-green-500 text-white">
+                    <div
+                      className={`flex items-center justify-center h-12 w-12 rounded-md shadow-sm ${feature.iconColor} text-white`}
+                    >
                       <feature.icon className="h-6 w-6" aria-hidden="true" />
                     </div>
                     <p className="mt-5 text-lg leading-6 font-medium text-gray-900">
