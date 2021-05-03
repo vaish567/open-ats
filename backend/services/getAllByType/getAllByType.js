@@ -1,4 +1,16 @@
 "use strict";
+/**
+ * Note: Depending on your applicant pool, this might be an 'expensive' call to make.
+ * For the sake of argument, let's say each applicant is 5kb in size.
+ * Dynamo charges $.25 for every million calls.
+ * Querying returns a max of 1mb per call.
+ * 4,000,000 applicants * 5kb each = 20,000mb.
+ * This means, at *minimum*, you will need to make 20,000 calls to Dynamo.
+ * Dynamo price per call = $0.00000025
+ * Querying 4 million applicants = $0.00000025 * 20,000 = $0.005
+ * Soooooo... do with that what you will. Use with caution.
+ * TODO will Lambda's timeout even let you do that many queries? lol
+ */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -36,18 +48,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// NOTE
-// NOTE
-// NOTE
-// This is an 'expensive' call
-// At 4kb per applicant & 4 million applicants
-// DynamoDB $0.25 per million reads
-// Query returns 1mb / 4kb = 250 applicants per call
-// 4 million / 250 applicants per call = 16,000 calls to get all
-// Cost per call to get all applicants = $0.002 I think, too tired to do the math
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
-var Joi = require("joi");
 var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
+var Joi = require("joi");
 var validSearches = ["Applicant", "Stage", "Funnel", "Question"];
 var getAllByType = function (searchTerm) { return __awaiter(void 0, void 0, void 0, function () {
     var validation, params, results_1, data, error_1;
