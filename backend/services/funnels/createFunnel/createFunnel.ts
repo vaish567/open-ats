@@ -2,9 +2,9 @@ import { DynamoDB } from "@aws-sdk/client-dynamodb";
 const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
 import { nanoid } from "nanoid";
 import * as Joi from "joi";
-const idLength = 25;
-const descriptionMaxLength = 2000;
-const salaryTypes = ["Salary", "Hourly", "Dynamic"]; // TODO change to 'Pay' types once Dynamo schema has been changed
+const idLength = 25; // TODO make this a global variable?
+const descriptionMaxLength = 2000; // TODO make this a global variable?
+const salaryTypes = ["Salary", "Hourly", "Dynamic"];
 const JoiConfig = {
   abortEarly: false,
   errors: {

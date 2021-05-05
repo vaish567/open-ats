@@ -1,20 +1,10 @@
 import createStage from "./createStage";
-import getAllByType from "../../search/getAllByType";
 const create = async () => {
-  let allFunnels: any[] | { message: string } = await getAllByType("Funnel");
-  let desiredFunnelId = allFunnels.filter((funnel) => {
-    return funnel.FUNNEL_TITLE.S == "Software Engineer";
-  });
-  console.log(allFunnels);
-
-  let funnelId = desiredFunnelId[0].FUNNEL_ID.S;
-  let funnelTitle = desiredFunnelId[0].FUNNEL_TITLE.S;
   const stage = {
-    PK: "dsad",
-    SK: "sdsa",
-    FUNNEL_ID: funnelId,
+    FUNNEL_ID: "Po_i3TKoIurkqDfK35Ytf9RW_",
+    DESCRIPTION: "Applicants should be reviewed here",
     TITLE: "Final Review",
-    FUNNEL_TITLE: funnelTitle,
+    FUNNEL_TITLE: "Wiretapper", // TODO, get the funnel info in the create stage call!
   };
   console.log(await createStage(stage));
 };

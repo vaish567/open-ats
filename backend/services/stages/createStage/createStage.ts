@@ -1,35 +1,52 @@
 import { DynamoDB } from "@aws-sdk/client-dynamodb";
+import doesFunnelExist from "../../../utils/doesFunnelExist/doesFunnelExist";
 import * as Joi from "joi";
-import { nanoid } from "nanoid";
-const idLength = 25;
 
 const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
 
-interface Stage {
-  PK: string; // STAGE_NAME#Questionnaire
+/**
+ *
+ * @param stage
+ * @param TITLE The stage title
+ * @param DESCRIPTION The description of this stage and what it does
+ * @param FUNNEL_ID The funnel ID of that this stage belongs to
+ * @returns
+ */
+const createStage = async (stage: {
   TITLE: string;
-  FUNNEL_ID: string; // Funnel ID of where this stage belongs
+  DESCRIPTION: string;
+  FUNNEL_ID: string;
   FUNNEL_TITLE: string;
-}
-
-const createStage = async (stage: Stage) => {
+}): Promise<{ message: string }> => {
   let params = {
     Item: {
       PK: { S: stage.FUNNEL_ID },
-      FUNNEL_ID: { S: stage.FUNNEL_ID },
-      FUNNEL_TITLE: { S: `FUNNEL_TITLE#${stage.FUNNEL_TITLE}` },
       SK: { S: `STAGE_TITLE#${stage.TITLE}` },
+      DESCRIPTION: { S: stage.DESCRIPTION },
+      FUNNEL_TITLE: { S: `FUNNEL_TITLE#${stage.FUNNEL_TITLE}` },
       TYPE: { S: "Stage" },
     },
     TableName: "OpenATS",
   };
 
   try {
-    await dynamodb.putItem(params);
-    return { message: `Succesfully created stage ${stage.TITLE}` };
+    const response = await doesFunnelExist(stage.FUNNEL_ID);
+    if (!response)
+      return {
+        message: `ERROR: Funnel ID ${stage.FUNNEL_ID} does not exist, please create it first before trying to make a stage inside of it`,
+      };
+
+    try {
+      await dynamodb.putItem(params);
+      return { message: `Succesfully created stage ${stage.TITLE}` };
+    } catch (error) {
+      return {
+        message: `An error occurred creating your stage - ${error.message}`,
+      };
+    }
   } catch (error) {
     return {
-      message: `An error occurred creating your stage - ${error.message}`,
+      message: `A message occurred checking if funnel ID ${stage.FUNNEL_ID} exists - unable to create stage: ${stage.TITLE}`,
     };
   }
 };

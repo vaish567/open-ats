@@ -40,9 +40,9 @@ var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
 var nanoid_1 = require("nanoid");
 var Joi = require("joi");
-var idLength = 25;
-var descriptionMaxLength = 2000;
-var salaryTypes = ["Salary", "Hourly", "Dynamic"]; // TODO change to 'Pay' types once Dynamo schema has been changed
+var idLength = 25; // TODO make this a global variable?
+var descriptionMaxLength = 2000; // TODO make this a global variable?
+var salaryTypes = ["Salary", "Hourly", "Dynamic"];
 var JoiConfig = {
     abortEarly: false,
     errors: {
