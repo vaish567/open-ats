@@ -52,6 +52,15 @@ var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
 var Joi = require("joi");
 var validSearches = ["Applicant", "Stage", "Funnel", "Question"];
+var joiConfig = {
+    // TODO make this a global variable? lol
+    abortEarly: false,
+    errors: {
+        wrap: {
+            label: "''",
+        },
+    },
+};
 var getAllByType = function (searchTerm) { return __awaiter(void 0, void 0, void 0, function () {
     var validation, params, results_1, data, error_1;
     var _a;
@@ -60,14 +69,7 @@ var getAllByType = function (searchTerm) { return __awaiter(void 0, void 0, void
             case 0:
                 validation = (_a = Joi.string()
                     .required())
-                    .valid.apply(_a, validSearches).validate(searchTerm, {
-                    abortEarly: false,
-                    errors: {
-                        wrap: {
-                            label: "''",
-                        },
-                    },
-                });
+                    .valid.apply(_a, validSearches).validate(searchTerm, joiConfig);
                 if (validation.error) {
                     return [2 /*return*/, {
                             message: "ERROR: " + validation.error.message,

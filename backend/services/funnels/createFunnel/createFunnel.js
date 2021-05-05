@@ -44,6 +44,7 @@ var idLength = 25; // TODO make this a global variable?
 var descriptionMaxLength = 2000; // TODO make this a global variable?
 var salaryTypes = ["Salary", "Hourly", "Dynamic"];
 var JoiConfig = {
+    // TODO make this a global variable? lol
     abortEarly: false,
     errors: {
         wrap: {

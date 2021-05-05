@@ -6,6 +6,7 @@ const idLength = 25; // TODO make this a global variable?
 const descriptionMaxLength = 2000; // TODO make this a global variable?
 const salaryTypes = ["Salary", "Hourly", "Dynamic"];
 const JoiConfig = {
+  // TODO make this a global variable? lol
   abortEarly: false,
   errors: {
     wrap: {
