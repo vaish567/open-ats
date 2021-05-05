@@ -1,6 +1,9 @@
 import { DynamoDB } from "@aws-sdk/client-dynamodb";
 import * as Joi from "joi";
 import { nanoid } from "nanoid";
+import doesFunnelExist from "../../../utils/doesFunnelExist/doesFunnelExist";
+import doesStageExist from "../../../utils/doesStageExist/doesStageExist";
+
 const idLength = 25;
 const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
 const joiConfig = {
@@ -33,16 +36,21 @@ const ApplicantSchema = Joi.object({
 // TODO add applicant types once schema has been laid out
 // Fountain just uses a 'data' attribute and all custom data fields go in there
 // Might be a good idea
-const createApplicant = async (applicant): object => {
+const createApplicant = async (applicant) => {
   // TS will yell at you in the meantime btw
-  if (!applicant)
-    return {
-      message: `ERROR: 'applicant' is required`, // TODO Joi can take care of this i :thonk:
-    };
-
   const validation = ApplicantSchema.validate(applicant, joiConfig);
   if (validation.error)
     return { message: `ERROR: ${validation.error.message}` };
+
+  const [funnelExists, stageExists] = await Promise.all([
+    doesFunnelExist(applicant.funnel_id),
+    doesStageExist(applicant.funnel_id, applicant.stage),
+  ]);
+
+  if (!funnelExists || !stageExists)
+    return {
+      message: `ERROR: The funnel + stage combination in which you are trying to place this applicant in (Funnel ID: '${applicant.funnel_id}' / stage name: '${applicant.stage}') does not exist`,
+    };
 
   const applicantId = nanoid(idLength);
   // TODO check if stage exists first
