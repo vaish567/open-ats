@@ -109,7 +109,7 @@ var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, 
                 return [2 /*return*/, { message: "Funnel  " + funnel.title + " created!" }];
             case 3:
                 error_1 = _a.sent();
-                console.error(error_1);
+                console.error("Error occurred creating a funnel", error_1);
                 return [2 /*return*/, {
                         message: "An error occurred creating your funnel " + error_1.message,
                     }];

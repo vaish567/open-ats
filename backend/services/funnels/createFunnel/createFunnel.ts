@@ -76,7 +76,7 @@ const createFunnel = async (funnel: {
     await dynamodb.putItem(params);
     return { message: `Funnel  ${funnel.title} created!` };
   } catch (error) {
-    console.error(error);
+    console.error(`Error occurred creating a funnel`, error);
     return {
       message: `An error occurred creating your funnel ${error.message}`,
     };

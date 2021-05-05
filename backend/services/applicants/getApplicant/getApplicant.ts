@@ -1,8 +1,9 @@
 import * as Joi from "joi";
-const idLength = 25;
+const idLength = 25; // TODO make this a global variable
 import { DynamoDB } from "@aws-sdk/client-dynamodb";
 const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
 const joiConfig = {
+  // TODO make this a global variable
   abortEarly: false,
   errors: {
     wrap: {
