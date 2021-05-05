@@ -58,7 +58,7 @@ var doesFunnelExist = function (funnelId) { return __awaiter(void 0, void 0, voi
                 return [4 /*yield*/, dynamodb.getItem(params)];
             case 1:
                 response = _a.sent();
-                return [2 /*return*/, response.Item ? response.Item[0] : false];
+                return [2 /*return*/, response.Item ? response.Item : false];
         }
     });
 }); };

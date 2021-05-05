@@ -18,23 +18,24 @@ const createStage = async (stage: {
   FUNNEL_ID: string;
   FUNNEL_TITLE: string;
 }): Promise<{ message: string }> => {
-  let params = {
-    Item: {
-      PK: { S: stage.FUNNEL_ID },
-      SK: { S: `STAGE_TITLE#${stage.TITLE}` },
-      DESCRIPTION: { S: stage.DESCRIPTION },
-      FUNNEL_TITLE: { S: `FUNNEL_TITLE#${stage.FUNNEL_TITLE}` },
-      TYPE: { S: "Stage" },
-    },
-    TableName: "OpenATS",
-  };
-
   try {
     const response = await doesFunnelExist(stage.FUNNEL_ID);
+
     if (!response)
       return {
         message: `ERROR: Funnel ID ${stage.FUNNEL_ID} does not exist, please create it first before trying to make a stage inside of it`,
       };
+
+    const params = {
+      Item: {
+        PK: { S: stage.FUNNEL_ID },
+        SK: { S: `STAGE_TITLE#${stage.TITLE}` },
+        DESCRIPTION: { S: stage.DESCRIPTION },
+        FUNNEL_TITLE: { S: `FUNNEL_TITLE#${response.FUNNEL_TITLE.S}` },
+        TYPE: { S: "Stage" },
+      },
+      TableName: "OpenATS",
+    };
 
     try {
       await dynamodb.putItem(params);

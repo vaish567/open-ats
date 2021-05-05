@@ -48,49 +48,47 @@ var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
  * @returns
  */
 var createStage = function (stage) { return __awaiter(void 0, void 0, void 0, function () {
-    var params, response, error_1, error_2;
+    var response, params, error_1, error_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                params = {
-                    Item: {
-                        PK: { S: stage.FUNNEL_ID },
-                        SK: { S: "STAGE_TITLE#" + stage.TITLE },
-                        DESCRIPTION: { S: stage.DESCRIPTION },
-                        FUNNEL_TITLE: { S: "FUNNEL_TITLE#" + stage.FUNNEL_TITLE },
-                        TYPE: { S: "Stage" },
-                    },
-                    TableName: "OpenATS",
-                };
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 7, , 8]);
+                _a.trys.push([0, 6, , 7]);
                 return [4 /*yield*/, doesFunnelExist_1.default(stage.FUNNEL_ID)];
-            case 2:
+            case 1:
                 response = _a.sent();
                 if (!response)
                     return [2 /*return*/, {
                             message: "ERROR: Funnel ID " + stage.FUNNEL_ID + " does not exist, please create it first before trying to make a stage inside of it",
                         }];
-                _a.label = 3;
-            case 3:
-                _a.trys.push([3, 5, , 6]);
+                params = {
+                    Item: {
+                        PK: { S: stage.FUNNEL_ID },
+                        SK: { S: "STAGE_TITLE#" + stage.TITLE },
+                        DESCRIPTION: { S: stage.DESCRIPTION },
+                        FUNNEL_TITLE: { S: "FUNNEL_TITLE#" + response.FUNNEL_TITLE.S },
+                        TYPE: { S: "Stage" },
+                    },
+                    TableName: "OpenATS",
+                };
+                _a.label = 2;
+            case 2:
+                _a.trys.push([2, 4, , 5]);
                 return [4 /*yield*/, dynamodb.putItem(params)];
-            case 4:
+            case 3:
                 _a.sent();
                 return [2 /*return*/, { message: "Succesfully created stage " + stage.TITLE }];
-            case 5:
+            case 4:
                 error_1 = _a.sent();
                 return [2 /*return*/, {
                         message: "An error occurred creating your stage - " + error_1.message,
                     }];
-            case 6: return [3 /*break*/, 8];
-            case 7:
+            case 5: return [3 /*break*/, 7];
+            case 6:
                 error_2 = _a.sent();
                 return [2 /*return*/, {
                         message: "A message occurred checking if funnel ID " + stage.FUNNEL_ID + " exists - unable to create stage: " + stage.TITLE,
                     }];
-            case 8: return [2 /*return*/];
+            case 7: return [2 /*return*/];
         }
     });
 }); };
