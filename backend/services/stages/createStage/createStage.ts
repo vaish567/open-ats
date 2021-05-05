@@ -58,7 +58,7 @@ const createStage = async (stage: {
     // Creates the stage
     const params = {
       Item: {
-        PK: { S: stage.FUNNEL_ID },
+        PK: { S: `FUNNEL#${stage.FUNNEL_ID}` },
         SK: { S: `STAGE_TITLE#${stage.STAGE_TITLE}` },
         DESCRIPTION: { S: stage.DESCRIPTION },
         FUNNEL_TITLE: { S: `FUNNEL_TITLE#${responseFunnel.FUNNEL_TITLE.S}` },

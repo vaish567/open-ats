@@ -47,7 +47,7 @@ var create = function () { return __awaiter(void 0, void 0, void 0, function () 
                     first_name: "Jose",
                     last_name: "Valerio",
                     phone_number: "4831284473",
-                    stage: "Ready To Drive",
+                    stage_title: "Ready To Drive",
                     funnel_id: "123",
                 };
                 _b = (_a = console).log;

@@ -23,20 +23,27 @@ const ApplicantSchema = Joi.object({
     .pattern(/^[0-9]+$/)
     .required(),
   funnel_id: Joi.string(),
-  stage: Joi.string(),
+  stage_title: Joi.string(),
 }).and(
   "email",
   "first_name",
   "last_name",
   "phone_number",
-  "stage",
+  "stage_title",
   "funnel_id"
 );
 
 // TODO add applicant types once schema has been laid out
 // Fountain just uses a 'data' attribute and all custom data fields go in there
 // Might be a good idea
-const createApplicant = async (applicant) => {
+const createApplicant = async (applicant: {
+  email: string;
+  first_name: string;
+  last_name: string;
+  phone_number: string;
+  stage_title: string;
+  funnel_id: string;
+}) => {
   // TS will yell at you in the meantime btw
   const validation = ApplicantSchema.validate(applicant, joiConfig);
   if (validation.error)
@@ -44,27 +51,28 @@ const createApplicant = async (applicant) => {
 
   const [funnelExists, stageExists] = await Promise.all([
     doesFunnelExist(applicant.funnel_id),
-    doesStageExist(applicant.funnel_id, applicant.stage),
+    doesStageExist(applicant.funnel_id, applicant.stage_title),
   ]);
 
   if (!funnelExists || !stageExists)
     return {
-      message: `ERROR: The funnel + stage combination in which you are trying to place this applicant in (Funnel ID: '${applicant.funnel_id}' / stage name: '${applicant.stage}') does not exist`,
+      message: `ERROR: The funnel + stage combination in which you are trying to place this applicant in (Funnel ID: '${applicant.funnel_id}' / Stage Title: '${applicant.stage_title}') does not exist`,
     };
 
   const applicantId = nanoid(idLength);
-  // TODO check if stage exists first
-  // TODO update ^ has been created, just need to import
+
   const params = {
     Item: {
-      PK: { S: applicantId },
-      SK: { S: applicantId },
+      PK: { S: `APPLICANT#${applicantId}` },
+      SK: { S: `APPLICANT#${applicantId}` },
       TYPE: { S: "Applicant" },
       APPLICANT_ID: { S: applicantId },
       CREATED_AT: { S: new Date().toISOString() },
-      CURRENT_FUNNEL_ID: { S: "vlXTvxE9xOYpuNZfXDZuEQHFV" }, // TODO get funnel id's first
-      CURRENT_FUNNEL_TITLE: { S: "Software Engineer" }, // TODO get funnel id's first
-      CURRENT_STAGE_TITLE: { S: `STAGE_TITLE#${applicant.stage}` },
+      CURRENT_FUNNEL_ID: { S: applicant.funnel_id },
+      CURRENT_FUNNEL_TITLE: { S: funnelExists.FUNNEL_TITLE.S! },
+      // Without exclamation mark, TS will throw an error ^
+      // We can guarantee that if a funnel exists, it will have a title
+      CURRENT_STAGE_TITLE: { S: `STAGE_TITLE#${applicant.stage_title}` },
       EMAIL: { S: applicant.email },
       FIRST_NAME: { S: applicant.first_name },
       LAST_NAME: { S: applicant.last_name },

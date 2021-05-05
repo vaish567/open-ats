@@ -80,8 +80,8 @@ var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, 
                 newFunnelId = nanoid_1.nanoid(idLength);
                 params = {
                     Item: {
-                        PK: { S: newFunnelId },
-                        SK: { S: newFunnelId },
+                        PK: { S: "FUNNEL#" + newFunnelId },
+                        SK: { S: "FUNNEL#" + newFunnelId },
                         TYPE: { S: "Funnel" },
                         LOCATIONS: { SS: funnel.locations },
                         PAY_RANGE: {

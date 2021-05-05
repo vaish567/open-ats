@@ -52,8 +52,8 @@ const createFunnel = async (funnel: {
   const newFunnelId = nanoid(idLength);
   const params = {
     Item: {
-      PK: { S: newFunnelId },
-      SK: { S: newFunnelId },
+      PK: { S: `FUNNEL#${newFunnelId}` },
+      SK: { S: `FUNNEL#${newFunnelId}` },
       TYPE: { S: "Funnel" },
       LOCATIONS: { SS: funnel.locations },
       PAY_RANGE: {
