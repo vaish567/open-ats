@@ -16,6 +16,6 @@ const doesFunnelExist = async (funnelId: string) => {
   };
 
   const response = await dynamodb.getItem(params);
-  return response.Item ? true : false;
+  return response.Item ? response.Item[0] : false;
 };
 export default doesFunnelExist;
