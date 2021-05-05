@@ -1,10 +1,9 @@
 import createStage from "./createStage";
 const create = async () => {
   const stage = {
-    FUNNEL_ID: "St1VHDkB1lwIMGaURozY5yYTN",
+    FUNNEL_ID: "A50-89RqLWg0Q6_tbCMeSmvH8",
     DESCRIPTION: "Applicants should be reviewed here",
-    TITLE: "Final Review",
-    FUNNEL_TITLE: "Wiretapper", // TODO, get the funnel info in the create stage call!
+    STAGE_TITLE: "Final Review",
   };
   console.log(await createStage(stage));
 };

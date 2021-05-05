@@ -43,10 +43,9 @@ var create = function () { return __awaiter(void 0, void 0, void 0, function () 
         switch (_c.label) {
             case 0:
                 stage = {
-                    FUNNEL_ID: "St1VHDkB1lwIMGaURozY5yYTN",
+                    FUNNEL_ID: "A50-89RqLWg0Q6_tbCMeSmvH8",
                     DESCRIPTION: "Applicants should be reviewed here",
-                    TITLE: "Final Review",
-                    FUNNEL_TITLE: "Wiretapper", // TODO, get the funnel info in the create stage call!
+                    STAGE_TITLE: "Final Review",
                 };
                 _b = (_a = console).log;
                 return [4 /*yield*/, createStage_1.default(stage)];
