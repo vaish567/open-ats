@@ -2,10 +2,11 @@ import { DynamoDB } from "@aws-sdk/client-dynamodb";
 const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
 import { nanoid } from "nanoid";
 import * as Joi from "joi";
-const idLength = 25;
-const descriptionMaxLength = 2000;
-const salaryTypes = ["Salary", "Hourly", "Dynamic"]; // TODO change to 'Pay' types once Dynamo schema has been changed
+const idLength = 25; // TODO make this a global variable?
+const descriptionMaxLength = 2000; // TODO make this a global variable?
+const salaryTypes = ["Salary", "Hourly", "Dynamic"];
 const JoiConfig = {
+  // TODO make this a global variable? lol
   abortEarly: false,
   errors: {
     wrap: {
@@ -51,8 +52,8 @@ const createFunnel = async (funnel: {
   const newFunnelId = nanoid(idLength);
   const params = {
     Item: {
-      PK: { S: newFunnelId },
-      SK: { S: newFunnelId },
+      PK: { S: `FUNNEL#${newFunnelId}` },
+      SK: { S: `FUNNEL#${newFunnelId}` },
       TYPE: { S: "Funnel" },
       LOCATIONS: { SS: funnel.locations },
       PAY_RANGE: {
@@ -75,7 +76,7 @@ const createFunnel = async (funnel: {
     await dynamodb.putItem(params);
     return { message: `Funnel  ${funnel.title} created!` };
   } catch (error) {
-    console.error(error);
+    console.error(`Error occurred creating a funnel`, error);
     return {
       message: `An error occurred creating your funnel ${error.message}`,
     };

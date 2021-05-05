@@ -39,6 +39,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var Joi = require("joi");
 var nanoid_1 = require("nanoid");
+var doesFunnelExist_1 = require("../../../utils/doesFunnelExist/doesFunnelExist");
+var doesStageExist_1 = require("../../../utils/doesStageExist/doesStageExist");
 var idLength = 25;
 var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
 var joiConfig = {
@@ -58,35 +60,42 @@ var ApplicantSchema = Joi.object({
         .pattern(/^[0-9]+$/)
         .required(),
     funnel_id: Joi.string(),
-    stage: Joi.string(),
-}).and("email", "first_name", "last_name", "phone_number", "stage", "funnel_id");
+    stage_title: Joi.string(),
+}).and("email", "first_name", "last_name", "phone_number", "stage_title", "funnel_id");
 // TODO add applicant types once schema has been laid out
 // Fountain just uses a 'data' attribute and all custom data fields go in there
 // Might be a good idea
 var createApplicant = function (applicant) { return __awaiter(void 0, void 0, void 0, function () {
-    var validation, applicantId, params, error_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var validation, _a, funnelExists, stageExists, applicantId, params, error_1;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
-                // TS will yell at you in the meantime btw
-                if (!applicant)
-                    return [2 /*return*/, {
-                            message: "ERROR: 'applicant' is required", // TODO Joi can take care of this i :thonk:
-                        }];
                 validation = ApplicantSchema.validate(applicant, joiConfig);
                 if (validation.error)
                     return [2 /*return*/, { message: "ERROR: " + validation.error.message }];
+                return [4 /*yield*/, Promise.all([
+                        doesFunnelExist_1.default(applicant.funnel_id),
+                        doesStageExist_1.default(applicant.funnel_id, applicant.stage_title),
+                    ])];
+            case 1:
+                _a = _b.sent(), funnelExists = _a[0], stageExists = _a[1];
+                if (!funnelExists || !stageExists)
+                    return [2 /*return*/, {
+                            message: "ERROR: The funnel + stage combination in which you are trying to place this applicant in (Funnel ID: '" + applicant.funnel_id + "' / Stage Title: '" + applicant.stage_title + "') does not exist",
+                        }];
                 applicantId = nanoid_1.nanoid(idLength);
                 params = {
                     Item: {
-                        PK: { S: applicantId },
-                        SK: { S: applicantId },
+                        PK: { S: "APPLICANT#" + applicantId },
+                        SK: { S: "APPLICANT#" + applicantId },
                         TYPE: { S: "Applicant" },
                         APPLICANT_ID: { S: applicantId },
                         CREATED_AT: { S: new Date().toISOString() },
-                        CURRENT_FUNNEL_ID: { S: "vlXTvxE9xOYpuNZfXDZuEQHFV" },
-                        CURRENT_FUNNEL_TITLE: { S: "Software Engineer" },
-                        CURRENT_STAGE_TITLE: { S: "STAGE_TITLE#" + applicant.stage },
+                        CURRENT_FUNNEL_ID: { S: applicant.funnel_id },
+                        CURRENT_FUNNEL_TITLE: { S: funnelExists.FUNNEL_TITLE.S },
+                        // Without exclamation mark, TS will throw an error ^
+                        // We can guarantee that if a funnel exists, it will have a title
+                        CURRENT_STAGE_TITLE: { S: "STAGE_TITLE#" + applicant.stage_title },
                         EMAIL: { S: applicant.email },
                         FIRST_NAME: { S: applicant.first_name },
                         LAST_NAME: { S: applicant.last_name },
@@ -95,21 +104,21 @@ var createApplicant = function (applicant) { return __awaiter(void 0, void 0, vo
                     },
                     TableName: "OpenATS", // TODO parameter store???
                 };
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, dynamodb.putItem(params)];
+                _b.label = 2;
             case 2:
-                _a.sent();
+                _b.trys.push([2, 4, , 5]);
+                return [4 /*yield*/, dynamodb.putItem(params)];
+            case 3:
+                _b.sent();
                 return [2 /*return*/, {
                         message: "Applicant created succesfully!",
                     }];
-            case 3:
-                error_1 = _a.sent();
+            case 4:
+                error_1 = _b.sent();
                 console.error(error_1);
                 console.error("An error occurred creating your applicant " + error_1.message);
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
         }
     });
 }); };

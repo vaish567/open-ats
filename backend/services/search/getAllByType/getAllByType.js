@@ -1,4 +1,16 @@
 "use strict";
+/**
+ * Note: Depending on your applicant pool, this might be an 'expensive' call to make.
+ * For the sake of argument, let's say each applicant is 5kb in size.
+ * Dynamo charges $.25 for every million calls.
+ * Querying returns a max of 1mb per call.
+ * 4,000,000 applicants * 5kb each = 20,000mb.
+ * This means, at *minimum*, you will need to make 20,000 calls to Dynamo.
+ * Dynamo price per call = $0.00000025
+ * Querying 4 million applicants = $0.00000025 * 20,000 = $0.005
+ * Soooooo... do with that what you will. Use with caution.
+ * TODO will Lambda's timeout even let you do that many queries? lol
+ */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -38,12 +50,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
-var nanoid_1 = require("nanoid");
 var Joi = require("joi");
-var idLength = 25; // TODO make this a global variable?
-var descriptionMaxLength = 2000; // TODO make this a global variable?
-var salaryTypes = ["Salary", "Hourly", "Dynamic"];
-var JoiConfig = {
+var validSearches = ["Applicant", "Stage", "Funnel", "Question"];
+var joiConfig = {
     // TODO make this a global variable? lol
     abortEarly: false,
     errors: {
@@ -52,69 +61,53 @@ var JoiConfig = {
         },
     },
 };
-var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, function () {
-    var FunnelSchema, validation, newFunnelId, params, error_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+var getAllByType = function (searchTerm) { return __awaiter(void 0, void 0, void 0, function () {
+    var validation, params, results_1, data, error_1;
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
-                FunnelSchema = Joi.object({
-                    title: Joi.string().required(),
-                    locations: Joi.array().items(Joi.string()).required(),
-                    description: Joi.string().max(descriptionMaxLength).required(),
-                    pay: Joi.object({
-                        // TODO
-                        isFixed: Joi.bool().required(),
-                        type: Joi.valid.apply(Joi, salaryTypes).required(),
-                        lowEnd: Joi.string().required(),
-                        fixed: Joi.string().required(),
-                        highEnd: Joi.string().required(),
-                        currency: Joi.string().length(3).required(), // TODO
-                    }),
-                });
-                validation = FunnelSchema.validate(funnel, JoiConfig);
+                validation = (_a = Joi.string()
+                    .required())
+                    .valid.apply(_a, validSearches).validate(searchTerm, joiConfig);
                 if (validation.error) {
                     return [2 /*return*/, {
                             message: "ERROR: " + validation.error.message,
                         }];
                 }
-                newFunnelId = nanoid_1.nanoid(idLength);
                 params = {
-                    Item: {
-                        PK: { S: "FUNNEL#" + newFunnelId },
-                        SK: { S: "FUNNEL#" + newFunnelId },
-                        TYPE: { S: "Funnel" },
-                        LOCATIONS: { SS: funnel.locations },
-                        PAY_RANGE: {
-                            M: {
-                                isFixed: { BOOL: false },
-                                type: { S: funnel.pay.type },
-                                lowEnd: { S: funnel.pay.lowEnd },
-                                highEnd: { S: funnel.pay.highEnd },
-                                fixed: { S: funnel.pay.fixed },
-                                currency: { S: funnel.pay.currency }, // TODO destructure this
-                            },
-                        },
-                        DESCRIPTION: { S: funnel.description },
-                        FUNNEL_ID: { S: newFunnelId },
-                        FUNNEL_TITLE: { S: funnel.title },
+                    TableName: "OpenATS",
+                    IndexName: "AllByType",
+                    KeyConditionExpression: "#type = :v_type",
+                    ExpressionAttributeNames: {
+                        "#type": "TYPE",
                     },
-                    TableName: "OpenATS", // TODO move to parameter store?
+                    ExpressionAttributeValues: {
+                        ":v_type": { S: searchTerm },
+                    },
+                    ExclusiveStartKey: undefined,
                 };
-                _a.label = 1;
+                _b.label = 1;
             case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, dynamodb.putItem(params)];
+                _b.trys.push([1, 3, , 4]);
+                results_1 = [];
+                return [4 /*yield*/, dynamodb.query(params)];
             case 2:
-                _a.sent();
-                return [2 /*return*/, { message: "Funnel  " + funnel.title + " created!" }];
+                data = _b.sent();
+                do {
+                    if (!data.Items)
+                        return [2 /*return*/, { message: searchTerm + " not found" }];
+                    data.Items.forEach(function (item) { return results_1.push(item); });
+                    params.ExclusiveStartKey = data.LastEvaluatedKey;
+                    // Keep querying to get ALL results
+                } while (typeof data.LastEvaluatedKey !== "undefined");
+                return [2 /*return*/, results_1];
             case 3:
-                error_1 = _a.sent();
-                console.error("Error occurred creating a funnel", error_1);
-                return [2 /*return*/, {
-                        message: "An error occurred creating your funnel " + error_1.message,
-                    }];
+                error_1 = _b.sent();
+                console.error("Error getting " + searchTerm, error_1);
+                return [2 /*return*/, { message: "ERROR: " + error_1.message }];
             case 4: return [2 /*return*/];
         }
     });
 }); };
-exports.default = createFunnel;
+exports.default = getAllByType;

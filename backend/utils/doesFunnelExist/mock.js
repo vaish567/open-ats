@@ -36,26 +36,17 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var createApplicant_1 = require("./createApplicant");
-var create = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var applicant, _a, _b;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
-            case 0:
-                applicant = {
-                    email: "josev@openats.app",
-                    first_name: "Jose",
-                    last_name: "Valerio",
-                    phone_number: "4831284473",
-                    stage_title: "Ready To Drive",
-                    funnel_id: "123",
-                };
-                _b = (_a = console).log;
-                return [4 /*yield*/, createApplicant_1.default(applicant)];
+var doesFunnelExist_1 = require("./doesFunnelExist");
+var check = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var response;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, doesFunnelExist_1.default("vlXTvxE9xOYpuNZfXDZuEQHFV")];
             case 1:
-                _b.apply(_a, [_c.sent()]);
+                response = _a.sent();
+                console.log(response);
                 return [2 /*return*/];
         }
     });
 }); };
-create();
+check();

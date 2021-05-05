@@ -1,16 +1,4 @@
 "use strict";
-/**
- * Note: Depending on your applicant pool, this might be an 'expensive' call to make.
- * For the sake of argument, let's say each applicant is 5kb in size.
- * Dynamo charges $.25 for every million calls.
- * Querying returns a max of 1mb per call.
- * 4,000,000 applicants * 5kb each = 20,000mb.
- * This means, at *minimum*, you will need to make 20,000 calls to Dynamo.
- * Dynamo price per call = $0.00000025
- * Querying 4 million applicants = $0.00000025 * 20,000 = $0.005
- * Soooooo... do with that what you will. Use with caution.
- * TODO will Lambda's timeout even let you do that many queries? lol
- */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -50,62 +38,36 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
-var Joi = require("joi");
-var validSearches = ["Applicant", "Stage", "Funnel", "Question"];
-var getAllByType = function (searchTerm) { return __awaiter(void 0, void 0, void 0, function () {
-    var validation, params, results_1, data, error_1;
-    var _a;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
+/**
+ * @description Checks if a funnel exists
+ * @param funnelId - The id of the funnel that you want to check
+ * @returns true or false
+ */
+var doesFunnelExist = function (funnelId) { return __awaiter(void 0, void 0, void 0, function () {
+    var params, response, error_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
             case 0:
-                validation = (_a = Joi.string()
-                    .required())
-                    .valid.apply(_a, validSearches).validate(searchTerm, {
-                    abortEarly: false,
-                    errors: {
-                        wrap: {
-                            label: "''",
-                        },
-                    },
-                });
-                if (validation.error) {
-                    return [2 /*return*/, {
-                            message: "ERROR: " + validation.error.message,
-                        }];
-                }
                 params = {
                     TableName: "OpenATS",
-                    IndexName: "AllByType",
-                    KeyConditionExpression: "#type = :v_type",
-                    ExpressionAttributeNames: {
-                        "#type": "TYPE",
+                    Key: {
+                        PK: { S: funnelId },
+                        SK: { S: funnelId },
                     },
-                    ExpressionAttributeValues: {
-                        ":v_type": { S: searchTerm },
-                    },
-                    ExclusiveStartKey: undefined,
                 };
-                _b.label = 1;
+                _a.label = 1;
             case 1:
-                _b.trys.push([1, 3, , 4]);
-                results_1 = [];
-                return [4 /*yield*/, dynamodb.query(params)];
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, dynamodb.getItem(params)];
             case 2:
-                data = _b.sent();
-                do {
-                    if (!data.Items)
-                        return [2 /*return*/, { message: searchTerm + " not found" }];
-                    data.Items.forEach(function (item) { return results_1.push(item); });
-                    params.ExclusiveStartKey = data.LastEvaluatedKey;
-                    // Keep querying to get ALL results
-                } while (typeof data.LastEvaluatedKey !== "undefined");
-                return [2 /*return*/, results_1];
+                response = _a.sent();
+                return [2 /*return*/, response.Item ? response.Item : false];
             case 3:
-                error_1 = _b.sent();
-                console.error("Error getting " + searchTerm, error_1);
-                return [2 /*return*/, { message: "ERROR: " + error_1.message }];
+                error_1 = _a.sent();
+                console.error("An error occurred checking if funnel " + funnelId + " exists", error_1);
+                return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }
     });
 }); };
-exports.default = getAllByType;
+exports.default = doesFunnelExist;

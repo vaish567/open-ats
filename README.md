@@ -51,5 +51,5 @@ The DynamoDB access patterns are as follows:
 **GSI: AllApplicantsInASpecificStage**
 
 - Get all applicants across all funnels in a specific stage
-  - PK is a stage name STAGE_NAME#(name here)
+  - PK is a stage title: STAGE_TITLE#(title here)
   - SK is an ISO 8601 timestamp of their creation date. Set >= beginning of time to get all records lol

@@ -6,7 +6,7 @@ const create = async () => {
     first_name: "Jose",
     last_name: "Valerio",
     phone_number: "4831284473",
-    stage: "Ready To Drive",
+    stage_title: "Ready To Drive",
     funnel_id: "123",
   };
   console.log(await createApplicant(applicant));
