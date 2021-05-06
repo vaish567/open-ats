@@ -29,15 +29,15 @@ const getAllByType = async (searchTerm: ValidTSObjectTypes) => {
       message: `ERROR: ${validation.error.message}`,
     };
   }
-  interface DBParams {
+  // Leave as let since we will query until done and ExclusiveStartKey will be changing
+  let params: {
     TableName: string;
     IndexName: string;
     KeyConditionExpression: string;
     ExpressionAttributeNames?: {};
     ExpressionAttributeValues?: {};
     ExclusiveStartKey?: { [key: string]: AttributeValue } | undefined;
-  } // TODO use in function params
-  let params: DBParams = {
+  } = {
     TableName: "OpenATS",
     IndexName: "AllByType",
     KeyConditionExpression: "#type = :v_type",
