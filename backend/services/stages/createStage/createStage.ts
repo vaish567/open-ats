@@ -32,6 +32,7 @@ const createStage = async (stage: {
     return { message: `ERROR: ${validation.error.message}`, status: 400 };
 
   try {
+    // We don't have to do these synchronously - but saves us a call if one doesn't even exist :T
     // Checks if funnel exists
     const responseFunnel = await doesFunnelExist(stage.FUNNEL_ID);
     if (!responseFunnel)
@@ -40,39 +41,50 @@ const createStage = async (stage: {
         status: 404,
       };
 
-    // Checks if there is a duplicate stage in this funnel already
-    const responseStage = await doesStageExist(
-      stage.FUNNEL_ID,
-      stage.STAGE_TITLE
-    );
-    if (responseStage)
-      return {
-        message: `ERROR: Stage ${stage.STAGE_TITLE} already exists in ${responseFunnel.FUNNEL_TITLE.S}, please choose another name or update the existing stage`,
-        status: 409,
-      };
-
-    // Creates the stage
-    const params = {
-      Item: {
-        PK: { S: `FUNNEL#${stage.FUNNEL_ID}` },
-        SK: { S: `STAGE_TITLE#${stage.STAGE_TITLE}` },
-        DESCRIPTION: { S: stage.DESCRIPTION },
-        FUNNEL_TITLE: { S: `FUNNEL_TITLE#${responseFunnel.FUNNEL_TITLE.S}` },
-        TYPE: { S: "Stage" },
-      },
-      TableName: "OpenATS",
-    };
-
     try {
-      await dynamodb.putItem(params);
-      return {
-        message: `Succesfully created stage ${stage.STAGE_TITLE} in ${responseFunnel.FUNNEL_TITLE.S}`,
-        status: 201,
-      };
+      // Checks if there is a duplicate stage in this funnel already
+      const responseStage = await doesStageExist(
+        stage.FUNNEL_ID,
+        stage.STAGE_TITLE
+      );
+      if (responseStage)
+        return {
+          message: `ERROR: Stage ${stage.STAGE_TITLE} already exists in ${responseFunnel.FUNNEL_TITLE.S}, please choose another name or update the existing stage`,
+          status: 409,
+        };
+
+      try {
+        // Creates the stage
+        const params = {
+          Item: {
+            PK: { S: `FUNNEL#${stage.FUNNEL_ID}` },
+            SK: { S: `STAGE_TITLE#${stage.STAGE_TITLE}` },
+            DESCRIPTION: { S: stage.DESCRIPTION },
+            FUNNEL_TITLE: {
+              S: `FUNNEL_TITLE#${responseFunnel.FUNNEL_TITLE.S}`,
+            },
+            TYPE: { S: "Stage" },
+          },
+          TableName: "OpenATS",
+        };
+        await dynamodb.putItem(params);
+        return {
+          message: `Succesfully created stage ${stage.STAGE_TITLE} in ${responseFunnel.FUNNEL_TITLE.S}`,
+          status: 201,
+        };
+      } catch (error) {
+        console.error(
+          `An error occurred creating your stage - ${error.message}`
+        );
+        return {
+          message: `ERROR: Unable to create your stage - ${error.message}`,
+          status: 500,
+        };
+      }
     } catch (error) {
-      console.error(`An error occurred creating your stage - ${error.message}`);
+      console.error(error);
       return {
-        message: `ERROR: Unable to create your stage - ${error.message}`,
+        message: `ERROR: Unable to check if stage already exists ${error.message}`,
         status: 500,
       };
     }
