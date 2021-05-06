@@ -41,7 +41,7 @@ const createApplicant = async (applicant: {
   // TS will yell at you in the meantime btw
   const validation = ApplicantSchema.validate(applicant, joiConfig);
   if (validation.error)
-    return { message: `ERROR: ${validation.error.message}` };
+    return { message: `ERROR: ${validation.error.message}`, status: 400 };
 
   const [funnelExists, stageExists] = await Promise.all([
     doesFunnelExist(applicant.funnel_id),
@@ -51,6 +51,7 @@ const createApplicant = async (applicant: {
   if (!funnelExists || !stageExists)
     return {
       message: `ERROR: The funnel + stage combination in which you are trying to place this applicant in (Funnel ID: '${applicant.funnel_id}' / Stage Title: '${applicant.stage_title}') does not exist`,
+      status: 404,
     };
 
   const applicantId = nanoid(idLength);
@@ -80,11 +81,13 @@ const createApplicant = async (applicant: {
     await dynamodb.putItem(params);
     return {
       message: "Applicant created succesfully!",
+      status: 201,
     };
   } catch (error) {
     console.error(error);
     return {
       message: `ERROR: Unable to create your applicant - ${error.message}`,
+      status: 500,
     };
   }
 };

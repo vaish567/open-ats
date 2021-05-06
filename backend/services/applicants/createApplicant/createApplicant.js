@@ -66,7 +66,7 @@ var createApplicant = function (applicant) { return __awaiter(void 0, void 0, vo
             case 0:
                 validation = ApplicantSchema.validate(applicant, joiConfig);
                 if (validation.error)
-                    return [2 /*return*/, { message: "ERROR: " + validation.error.message }];
+                    return [2 /*return*/, { message: "ERROR: " + validation.error.message, status: 400 }];
                 return [4 /*yield*/, Promise.all([
                         doesFunnelExist_1.default(applicant.funnel_id),
                         doesStageExist_1.default(applicant.funnel_id, applicant.stage_title),
@@ -76,6 +76,7 @@ var createApplicant = function (applicant) { return __awaiter(void 0, void 0, vo
                 if (!funnelExists || !stageExists)
                     return [2 /*return*/, {
                             message: "ERROR: The funnel + stage combination in which you are trying to place this applicant in (Funnel ID: '" + applicant.funnel_id + "' / Stage Title: '" + applicant.stage_title + "') does not exist",
+                            status: 404,
                         }];
                 applicantId = nanoid_1.nanoid(idLength);
                 params = {
@@ -106,12 +107,14 @@ var createApplicant = function (applicant) { return __awaiter(void 0, void 0, vo
                 _b.sent();
                 return [2 /*return*/, {
                         message: "Applicant created succesfully!",
+                        status: 201,
                     }];
             case 4:
                 error_1 = _b.sent();
                 console.error(error_1);
                 return [2 /*return*/, {
                         message: "ERROR: Unable to create your applicant - " + error_1.message,
+                        status: 500,
                     }];
             case 5: return [2 /*return*/];
         }
