@@ -1,11 +1,10 @@
-import Config from "../../../../config/GeneralConfig.js";
+import Config, { ValidTSPayTypes } from "../../../../config/GeneralConfig.js";
 import { DynamoDB } from "@aws-sdk/client-dynamodb";
 import { nanoid } from "nanoid";
 import * as Joi from "joi";
 const descriptionMaxLength = Config.FUNNEL_DESCRIPTION_MAX_LENGTH;
 const idLength: number = Config.ID_GENERATION_LENGTH;
 const dynamodb = new DynamoDB(Config.DYNAMO_CONFIG);
-const payTypes = Config.PAY_TYPES;
 const JoiConfig = Config.JOI_CONFIG;
 
 const createFunnel = async (funnel: {
@@ -13,7 +12,7 @@ const createFunnel = async (funnel: {
   description: string;
   locations: string[];
   pay: {
-    type: typeof Config.PAY_TYPES;
+    type: ValidTSPayTypes;
     lowEnd?: string;
     highEnd?: string;
     fixed?: string;
@@ -26,7 +25,7 @@ const createFunnel = async (funnel: {
     locations: Joi.array().items(Joi.string()).required(),
     description: Joi.string().max(descriptionMaxLength).required(),
     pay: Joi.object({
-      type: Joi.valid(...payTypes).required(),
+      type: Joi.valid(...Config.VALID_PAY_TYPES).required(),
       lowEnd: Joi.string(),
       highEnd: Joi.string(),
       fixed: Joi.string(),

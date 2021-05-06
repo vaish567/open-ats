@@ -43,7 +43,6 @@ var Joi = require("joi");
 var descriptionMaxLength = GeneralConfig_js_1.default.FUNNEL_DESCRIPTION_MAX_LENGTH;
 var idLength = GeneralConfig_js_1.default.ID_GENERATION_LENGTH;
 var dynamodb = new client_dynamodb_1.DynamoDB(GeneralConfig_js_1.default.DYNAMO_CONFIG);
-var payTypes = GeneralConfig_js_1.default.PAY_TYPES;
 var JoiConfig = GeneralConfig_js_1.default.JOI_CONFIG;
 var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, function () {
     var FunnelSchema, validation, newFunnelId, _a, type, lowEnd, highEnd, currency, fixed, fixedDescription, params, error_1;
@@ -55,7 +54,7 @@ var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, 
                     locations: Joi.array().items(Joi.string()).required(),
                     description: Joi.string().max(descriptionMaxLength).required(),
                     pay: Joi.object({
-                        type: Joi.valid.apply(Joi, payTypes).required(),
+                        type: Joi.valid.apply(Joi, GeneralConfig_js_1.default.VALID_PAY_TYPES).required(),
                         lowEnd: Joi.string(),
                         highEnd: Joi.string(),
                         fixed: Joi.string(),
