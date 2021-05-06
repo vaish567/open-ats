@@ -116,8 +116,9 @@ var createApplicant = function (applicant) { return __awaiter(void 0, void 0, vo
             case 4:
                 error_1 = _b.sent();
                 console.error(error_1);
-                console.error("An error occurred creating your applicant " + error_1.message);
-                return [3 /*break*/, 5];
+                return [2 /*return*/, {
+                        message: "ERROR: Unable to create your applicant - " + error_1.message,
+                    }];
             case 5: return [2 /*return*/];
         }
     });

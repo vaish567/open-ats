@@ -88,7 +88,7 @@ var createStage = function (stage) { return __awaiter(void 0, void 0, void 0, fu
                 responseStage = _a.sent();
                 if (responseStage)
                     return [2 /*return*/, {
-                            message: "Stage " + stage.STAGE_TITLE + " already exists in " + responseFunnel.FUNNEL_TITLE.S + ", please choose another name or update the existing stage",
+                            message: "ERROR: Stage " + stage.STAGE_TITLE + " already exists in " + responseFunnel.FUNNEL_TITLE.S + ", please choose another name or update the existing stage",
                         }];
                 params = {
                     Item: {
@@ -113,14 +113,14 @@ var createStage = function (stage) { return __awaiter(void 0, void 0, void 0, fu
                 error_1 = _a.sent();
                 console.error("An error occurred creating your stage - " + error_1.message);
                 return [2 /*return*/, {
-                        message: "An error occurred creating your stage - " + error_1.message,
+                        message: "ERROR: Unable to create your stage - " + error_1.message,
                     }];
             case 7: return [3 /*break*/, 9];
             case 8:
                 error_2 = _a.sent();
                 console.error("A message occurred checking if funnel ID " + stage.FUNNEL_ID + " exists, unable to create stage: " + stage.STAGE_TITLE + " - " + error_2.message);
                 return [2 /*return*/, {
-                        message: "A message occurred checking if funnel ID " + stage.FUNNEL_ID + " exists, unable to create stage: " + stage.STAGE_TITLE + " - " + error_2.message,
+                        message: "ERROR: Unable to check if funnel ID " + stage.FUNNEL_ID + " exists, was not able to create stage '" + stage.STAGE_TITLE + "' - " + error_2.message,
                     }];
             case 9: return [2 /*return*/];
         }

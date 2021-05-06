@@ -89,7 +89,9 @@ const createApplicant = async (applicant: {
     };
   } catch (error) {
     console.error(error);
-    console.error(`An error occurred creating your applicant ${error.message}`);
+    return {
+      message: `ERROR: Unable to create your applicant - ${error.message}`,
+    };
   }
 };
 
