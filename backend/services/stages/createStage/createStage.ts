@@ -52,7 +52,7 @@ const createStage = async (stage: {
     );
     if (responseStage)
       return {
-        message: `Stage ${stage.STAGE_TITLE} already exists in ${responseFunnel.FUNNEL_TITLE.S}, please choose another name or update the existing stage`,
+        message: `ERROR: Stage ${stage.STAGE_TITLE} already exists in ${responseFunnel.FUNNEL_TITLE.S}, please choose another name or update the existing stage`,
       };
 
     // Creates the stage
@@ -75,7 +75,7 @@ const createStage = async (stage: {
     } catch (error) {
       console.error(`An error occurred creating your stage - ${error.message}`);
       return {
-        message: `An error occurred creating your stage - ${error.message}`,
+        message: `ERROR: Unable to create your stage - ${error.message}`,
       };
     }
   } catch (error) {
@@ -83,7 +83,7 @@ const createStage = async (stage: {
       `A message occurred checking if funnel ID ${stage.FUNNEL_ID} exists, unable to create stage: ${stage.STAGE_TITLE} - ${error.message}`
     );
     return {
-      message: `A message occurred checking if funnel ID ${stage.FUNNEL_ID} exists, unable to create stage: ${stage.STAGE_TITLE} - ${error.message}`,
+      message: `ERROR: Unable to check if funnel ID ${stage.FUNNEL_ID} exists, was not able to create stage '${stage.STAGE_TITLE}' - ${error.message}`,
     };
   }
 };

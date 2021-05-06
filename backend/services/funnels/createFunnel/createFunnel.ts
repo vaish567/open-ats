@@ -100,7 +100,7 @@ const createFunnel = async (funnel: {
   } catch (error) {
     console.error(`Error occurred creating a funnel`, error);
     return {
-      message: `An error occurred creating your funnel ${error.message}`,
+      message: `ERROR: Unable to create your funnel - ${error.message}`,
     };
   }
 };
