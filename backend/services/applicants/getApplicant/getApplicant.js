@@ -52,7 +52,7 @@ var getApplicant = function (id) { return __awaiter(void 0, void 0, void 0, func
                     .length(idLength)
                     .validate(id, joiConfig);
                 if (validation.error)
-                    return [2 /*return*/, { message: "ERROR: " + validation.error.message }];
+                    return [2 /*return*/, { message: "ERROR: " + validation.error.message, status: 400 }];
                 params = {
                     Key: {
                         PK: {
@@ -71,12 +71,12 @@ var getApplicant = function (id) { return __awaiter(void 0, void 0, void 0, func
             case 2:
                 data = _a.sent();
                 if (!data.Item)
-                    return [2 /*return*/, { message: "Applicant not found" }];
-                return [2 /*return*/, data.Item];
+                    return [2 /*return*/, { message: "Applicant not found", status: 404 }];
+                return [2 /*return*/, { message: data.Item, status: 200 }];
             case 3:
                 error_1 = _a.sent();
                 console.error("Error getting applicant by id " + id, error_1);
-                return [2 /*return*/, { message: "ERROR: " + error_1.message }];
+                return [2 /*return*/, { message: "ERROR: " + error_1.message, status: 500 }];
             case 4: return [2 /*return*/];
         }
     });

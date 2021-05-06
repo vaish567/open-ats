@@ -12,7 +12,7 @@ const getApplicant = async (id: string) => {
     .validate(id, joiConfig);
 
   if (validation.error)
-    return { message: `ERROR: ${validation.error.message}` };
+    return { message: `ERROR: ${validation.error.message}`, status: 400 };
 
   const params = {
     Key: {
@@ -27,11 +27,11 @@ const getApplicant = async (id: string) => {
   };
   try {
     const data = await dynamodb.getItem(params);
-    if (!data.Item) return { message: "Applicant not found" };
-    return data.Item;
+    if (!data.Item) return { message: "Applicant not found", status: 404 };
+    return { message: data.Item, status: 200 };
   } catch (error) {
     console.error(`Error getting applicant by id ${id}`, error);
-    return { message: `ERROR: ${error.message}` };
+    return { message: `ERROR: ${error.message}`, status: 500 };
   }
 };
 
