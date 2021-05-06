@@ -26,10 +26,10 @@ const createStage = async (stage: {
   STAGE_TITLE: string;
   DESCRIPTION: string;
   FUNNEL_ID: string;
-}): Promise<{ message: string }> => {
+}): Promise<{ message: string; status: number }> => {
   const validation = StageSchema.validate(stage, joiConfig);
   if (validation.error)
-    return { message: `ERROR: ${validation.error.message}` };
+    return { message: `ERROR: ${validation.error.message}`, status: 400 };
 
   try {
     // Checks if funnel exists
@@ -37,6 +37,7 @@ const createStage = async (stage: {
     if (!responseFunnel)
       return {
         message: `ERROR: Funnel ID ${stage.FUNNEL_ID} does not exist, please create it first before trying to make a stage inside of it`,
+        status: 404,
       };
 
     // Checks if there is a duplicate stage in this funnel already
@@ -47,6 +48,7 @@ const createStage = async (stage: {
     if (responseStage)
       return {
         message: `ERROR: Stage ${stage.STAGE_TITLE} already exists in ${responseFunnel.FUNNEL_TITLE.S}, please choose another name or update the existing stage`,
+        status: 409,
       };
 
     // Creates the stage
@@ -65,11 +67,13 @@ const createStage = async (stage: {
       await dynamodb.putItem(params);
       return {
         message: `Succesfully created stage ${stage.STAGE_TITLE} in ${responseFunnel.FUNNEL_TITLE.S}`,
+        status: 201,
       };
     } catch (error) {
       console.error(`An error occurred creating your stage - ${error.message}`);
       return {
         message: `ERROR: Unable to create your stage - ${error.message}`,
+        status: 500,
       };
     }
   } catch (error) {
@@ -78,6 +82,7 @@ const createStage = async (stage: {
     );
     return {
       message: `ERROR: Unable to check if funnel ID ${stage.FUNNEL_ID} exists, was not able to create stage '${stage.STAGE_TITLE}' - ${error.message}`,
+      status: 500,
     };
   }
 };
