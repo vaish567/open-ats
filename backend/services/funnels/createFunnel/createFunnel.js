@@ -42,7 +42,12 @@ var nanoid_1 = require("nanoid");
 var Joi = require("joi");
 var idLength = 25; // TODO make this a global variable?
 var descriptionMaxLength = 2000; // TODO make this a global variable?
-var salaryTypes = ["Salary", "Hourly", "Dynamic"];
+var salaryTypes = [
+    "Salary",
+    "Hourly",
+    "Commission",
+    "Dynamic (Per Delivery, Per Task, etc.)",
+];
 var JoiConfig = {
     // TODO make this a global variable? lol
     abortEarly: false,
@@ -53,23 +58,27 @@ var JoiConfig = {
     },
 };
 var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, function () {
-    var FunnelSchema, validation, newFunnelId, params, error_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var FunnelSchema, validation, newFunnelId, _a, type, lowEnd, highEnd, currency, fixed, fixedDescription, params, error_1;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
                 FunnelSchema = Joi.object({
                     title: Joi.string().required(),
                     locations: Joi.array().items(Joi.string()).required(),
                     description: Joi.string().max(descriptionMaxLength).required(),
                     pay: Joi.object({
-                        // TODO
-                        isFixed: Joi.bool().required(),
                         type: Joi.valid.apply(Joi, salaryTypes).required(),
-                        lowEnd: Joi.string().required(),
-                        fixed: Joi.string().required(),
-                        highEnd: Joi.string().required(),
-                        currency: Joi.string().length(3).required(), // TODO
-                    }),
+                        lowEnd: Joi.string(),
+                        highEnd: Joi.string(),
+                        fixed: Joi.string(),
+                        fixedDescription: Joi.string(),
+                        currency: Joi.string().length(3).required(),
+                    })
+                        .and("currency", "type") // Both are required
+                        .without("fixed", ["lowEnd", "highEnd"]) // Fixed cannot exist with lowEnd || highEnd
+                        .with("lowEnd", "highEnd") // If lowEnd exists, you must include highEnd
+                        .with("fixed", "fixedDescription") // If fixed exists, you must include fixedDescription
+                        .without("fixedDescription", ["lowEnd", "highEnd"]), // fixedDescription cannot appear next to lowEnd || highEnd
                 });
                 validation = FunnelSchema.validate(funnel, JoiConfig);
                 if (validation.error) {
@@ -78,6 +87,7 @@ var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, 
                         }];
                 }
                 newFunnelId = nanoid_1.nanoid(idLength);
+                _a = funnel.pay, type = _a.type, lowEnd = _a.lowEnd, highEnd = _a.highEnd, currency = _a.currency, fixed = _a.fixed, fixedDescription = _a.fixedDescription;
                 params = {
                     Item: {
                         PK: { S: "FUNNEL#" + newFunnelId },
@@ -86,12 +96,12 @@ var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, 
                         LOCATIONS: { SS: funnel.locations },
                         PAY_RANGE: {
                             M: {
-                                isFixed: { BOOL: false },
-                                type: { S: funnel.pay.type },
-                                lowEnd: { S: funnel.pay.lowEnd },
-                                highEnd: { S: funnel.pay.highEnd },
-                                fixed: { S: funnel.pay.fixed },
-                                currency: { S: funnel.pay.currency }, // TODO destructure this
+                                type: { S: type },
+                                lowEnd: { S: lowEnd ? lowEnd : "" },
+                                highEnd: { S: highEnd ? highEnd : "" },
+                                fixed: { S: fixed ? fixed : "" },
+                                fixedDescription: { S: fixedDescription ? fixedDescription : "" },
+                                currency: { S: currency },
                             },
                         },
                         DESCRIPTION: { S: funnel.description },
@@ -100,15 +110,16 @@ var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, 
                     },
                     TableName: "OpenATS", // TODO move to parameter store?
                 };
-                _a.label = 1;
+                console.log(JSON.stringify(params));
+                _b.label = 1;
             case 1:
-                _a.trys.push([1, 3, , 4]);
+                _b.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, dynamodb.putItem(params)];
             case 2:
-                _a.sent();
+                _b.sent();
                 return [2 /*return*/, { message: "Funnel  " + funnel.title + " created!" }];
             case 3:
-                error_1 = _a.sent();
+                error_1 = _b.sent();
                 console.error("Error occurred creating a funnel", error_1);
                 return [2 /*return*/, {
                         message: "An error occurred creating your funnel " + error_1.message,

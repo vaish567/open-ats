@@ -4,7 +4,12 @@ import { nanoid } from "nanoid";
 import * as Joi from "joi";
 const idLength = 25; // TODO make this a global variable?
 const descriptionMaxLength = 2000; // TODO make this a global variable?
-const salaryTypes = ["Salary", "Hourly", "Dynamic"];
+const salaryTypes = [
+  "Salary",
+  "Hourly",
+  "Commission",
+  "Dynamic (Per Delivery, Per Task, etc.)",
+];
 const JoiConfig = {
   // TODO make this a global variable? lol
   abortEarly: false,
@@ -19,11 +24,15 @@ const createFunnel = async (funnel: {
   description: string;
   locations: string[];
   pay: {
-    isFixed: boolean;
-    type: "Salary" | "Hourly" | "Dynamic";
-    lowEnd: string;
-    fixed: string;
-    highEnd: string;
+    type:
+      | "Salary"
+      | "Hourly"
+      | "Commission"
+      | "Dynamic (Per Delivery, Per Task, etc.)";
+    lowEnd?: string;
+    highEnd?: string;
+    fixed?: string;
+    fixedDescription?: string;
     currency: string;
   };
 }) => {
@@ -32,14 +41,18 @@ const createFunnel = async (funnel: {
     locations: Joi.array().items(Joi.string()).required(),
     description: Joi.string().max(descriptionMaxLength).required(),
     pay: Joi.object({
-      // TODO
-      isFixed: Joi.bool().required(), // TODO
-      type: Joi.valid(...salaryTypes).required(), // TODO ------- some of these shouldn't be required
-      lowEnd: Joi.string().required(), // TODO  ----------------  due to the different salary types
-      fixed: Joi.string().required(), // TODO ------------------ If Salary = should be 'fixed' only
-      highEnd: Joi.string().required(), // TODO
-      currency: Joi.string().length(3).required(), // TODO
-    }),
+      type: Joi.valid(...salaryTypes).required(),
+      lowEnd: Joi.string(),
+      highEnd: Joi.string(),
+      fixed: Joi.string(),
+      fixedDescription: Joi.string(),
+      currency: Joi.string().length(3).required(),
+    })
+      .and("currency", "type") // Both are required
+      .without("fixed", ["lowEnd", "highEnd"]) // Fixed cannot exist with lowEnd || highEnd
+      .with("lowEnd", "highEnd") // If lowEnd exists, you must include highEnd
+      .with("fixed", "fixedDescription") // If fixed exists, you must include fixedDescription
+      .without("fixedDescription", ["lowEnd", "highEnd"]), // fixedDescription cannot appear next to lowEnd || highEnd
   });
 
   const validation = FunnelSchema.validate(funnel, JoiConfig);
@@ -50,6 +63,14 @@ const createFunnel = async (funnel: {
   }
 
   const newFunnelId = nanoid(idLength);
+  const {
+    type,
+    lowEnd,
+    highEnd,
+    currency,
+    fixed,
+    fixedDescription,
+  } = funnel.pay;
   const params = {
     Item: {
       PK: { S: `FUNNEL#${newFunnelId}` },
@@ -58,12 +79,12 @@ const createFunnel = async (funnel: {
       LOCATIONS: { SS: funnel.locations },
       PAY_RANGE: {
         M: {
-          isFixed: { BOOL: false }, // TODO destructure this, also, some might be optional. hmm :thonk:
-          type: { S: funnel.pay.type }, // TODO destructure this
-          lowEnd: { S: funnel.pay.lowEnd }, // TODO destructure this
-          highEnd: { S: funnel.pay.highEnd }, // TODO destructure this
-          fixed: { S: funnel.pay.fixed }, // TODO destructure this
-          currency: { S: funnel.pay.currency }, // TODO destructure this
+          type: { S: type },
+          lowEnd: { S: lowEnd ? lowEnd : "" },
+          highEnd: { S: highEnd ? highEnd : "" },
+          fixed: { S: fixed ? fixed : "" },
+          fixedDescription: { S: fixedDescription ? fixedDescription : "" },
+          currency: { S: currency },
         },
       },
       DESCRIPTION: { S: funnel.description },
@@ -72,6 +93,7 @@ const createFunnel = async (funnel: {
     },
     TableName: "OpenATS", // TODO move to parameter store?
   };
+  console.log(JSON.stringify(params));
   try {
     await dynamodb.putItem(params);
     return { message: `Funnel  ${funnel.title} created!` };

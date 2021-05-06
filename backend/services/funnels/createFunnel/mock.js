@@ -38,26 +38,21 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var createFunnel_1 = require("./createFunnel");
 var create = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var newFunnel, _a, _b;
+    var _a, _b;
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
-                newFunnel = {
-                    title: "Boston",
-                    locations: ["Remote"],
-                    description: "Come work for us!",
-                };
                 _b = (_a = console).log;
                 return [4 /*yield*/, createFunnel_1.default({
                         title: "Wiretapper",
                         description: "You will be responsible for wiretapping everyone",
                         locations: ["Remote", "NYC"],
                         pay: {
-                            isFixed: true,
                             type: "Salary",
                             lowEnd: "37,000",
                             highEnd: "58,000",
                             fixed: "45,000",
+                            fixedDescription: "tomato tomato",
                             currency: "USD",
                         },
                     })];
