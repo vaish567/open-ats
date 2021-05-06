@@ -36,61 +36,60 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var GeneralConfig_js_1 = require("../../../../config/GeneralConfig.js");
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
-var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
 var nanoid_1 = require("nanoid");
 var Joi = require("joi");
-var idLength = 25;
-var descriptionMaxLength = 2000;
-var salaryTypes = ["Salary", "Hourly", "Dynamic"]; // TODO change to 'Pay' types once Dynamo schema has been changed
-var JoiConfig = {
-    abortEarly: false,
-    errors: {
-        wrap: {
-            label: "''",
-        },
-    },
-};
+var descriptionMaxLength = GeneralConfig_js_1.default.FUNNEL_DESCRIPTION_MAX_LENGTH;
+var idLength = GeneralConfig_js_1.default.ID_GENERATION_LENGTH;
+var dynamodb = new client_dynamodb_1.DynamoDB(GeneralConfig_js_1.default.DYNAMO_CONFIG);
+var JoiConfig = GeneralConfig_js_1.default.JOI_CONFIG;
 var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, function () {
-    var FunnelSchema, validation, newFunnelId, dynamoDBParams, error_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var FunnelSchema, validation, newFunnelId, _a, type, lowEnd, highEnd, currency, fixed, fixedDescription, params, error_1;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
                 FunnelSchema = Joi.object({
                     title: Joi.string().required(),
                     locations: Joi.array().items(Joi.string()).required(),
                     description: Joi.string().max(descriptionMaxLength).required(),
                     pay: Joi.object({
-                        // TODO
-                        isFixed: Joi.bool().required(),
-                        type: Joi.valid.apply(Joi, salaryTypes).required(),
-                        lowEnd: Joi.string().required(),
-                        fixed: Joi.string().required(),
-                        highEnd: Joi.string().required(),
-                        currency: Joi.string().length(3).required(), // TODO
-                    }),
+                        type: Joi.valid.apply(Joi, GeneralConfig_js_1.default.VALID_PAY_TYPES).required(),
+                        lowEnd: Joi.string(),
+                        highEnd: Joi.string(),
+                        fixed: Joi.string(),
+                        fixedDescription: Joi.string(),
+                        currency: Joi.string().length(3).required(),
+                    })
+                        .and("currency", "type") // Both are required
+                        .without("fixed", ["lowEnd", "highEnd"]) // Fixed cannot exist with lowEnd || highEnd
+                        .with("lowEnd", "highEnd") // If lowEnd exists, you must include highEnd
+                        .with("fixed", "fixedDescription") // If fixed exists, you must include fixedDescription
+                        .without("fixedDescription", ["lowEnd", "highEnd"]), // fixedDescription cannot appear next to lowEnd || highEnd
                 });
                 validation = FunnelSchema.validate(funnel, JoiConfig);
                 if (validation.error) {
                     return [2 /*return*/, {
                             message: "ERROR: " + validation.error.message,
+                            status: 400,
                         }];
                 }
                 newFunnelId = nanoid_1.nanoid(idLength);
-                dynamoDBParams = {
+                _a = funnel.pay, type = _a.type, lowEnd = _a.lowEnd, highEnd = _a.highEnd, currency = _a.currency, fixed = _a.fixed, fixedDescription = _a.fixedDescription;
+                params = {
                     Item: {
-                        PK: { S: newFunnelId },
-                        SK: { S: newFunnelId },
+                        PK: { S: "FUNNEL#" + newFunnelId },
+                        SK: { S: "FUNNEL#" + newFunnelId },
                         TYPE: { S: "Funnel" },
                         LOCATIONS: { SS: funnel.locations },
                         PAY_RANGE: {
                             M: {
-                                isFixed: { BOOL: false },
-                                type: { S: funnel.pay.type },
-                                lowEnd: { S: funnel.pay.lowEnd },
-                                highEnd: { S: funnel.pay.highEnd },
-                                fixed: { S: funnel.pay.fixed },
-                                currency: { S: funnel.pay.currency }, // TODO destructure this
+                                type: { S: type },
+                                lowEnd: { S: lowEnd ? lowEnd : "" },
+                                highEnd: { S: highEnd ? highEnd : "" },
+                                fixed: { S: fixed ? fixed : "" },
+                                fixedDescription: { S: fixedDescription ? fixedDescription : "" },
+                                currency: { S: currency },
                             },
                         },
                         DESCRIPTION: { S: funnel.description },
@@ -99,18 +98,20 @@ var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, 
                     },
                     TableName: "OpenATS", // TODO move to parameter store?
                 };
-                _a.label = 1;
+                console.log(JSON.stringify(params));
+                _b.label = 1;
             case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, dynamodb.putItem(dynamoDBParams)];
+                _b.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, dynamodb.putItem(params)];
             case 2:
-                _a.sent();
-                return [2 /*return*/, { message: "Funnel  " + funnel.title + " created!" }];
+                _b.sent();
+                return [2 /*return*/, { message: "Funnel  " + funnel.title + " created!", status: 201 }];
             case 3:
-                error_1 = _a.sent();
-                console.error(error_1);
+                error_1 = _b.sent();
+                console.error("Error occurred creating a funnel", error_1);
                 return [2 /*return*/, {
-                        message: "An error occurred creating your funnel " + error_1.message,
+                        message: "ERROR: Unable to create your funnel - " + error_1.message,
+                        status: 500,
                     }];
             case 4: return [2 /*return*/];
         }

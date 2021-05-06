@@ -10,7 +10,6 @@
  * Querying 4 million applicants = $0.00000025 * 20,000 = $0.005
  * Soooooo... do with that what you will. Use with caution.
  * TODO will Lambda's timeout even let you do that many queries? lol
- *
  */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -50,32 +49,26 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
-var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
+var GeneralConfig_js_1 = require("../../../../config/GeneralConfig.js");
 var Joi = require("joi");
-var validSearches = ["Applicant", "Stage", "Funnel", "Question"];
-var joiConfig = {
-    abortEarly: false,
-    errors: {
-        wrap: {
-            label: "''",
-        },
-    },
-};
-// Results, if found, will be in an array. Errors will be a message containing the error
+var dynamodb = new client_dynamodb_1.DynamoDB(GeneralConfig_js_1.default.DYNAMO_CONFIG);
+var joiConfig = GeneralConfig_js_1.default.JOI_CONFIG;
 var getAllByType = function (searchTerm) { return __awaiter(void 0, void 0, void 0, function () {
-    var validation, dynamoDBParams, results_1, data, error_1;
+    var validation, params, results_1, data, error_1;
     var _a;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
                 validation = (_a = Joi.string()
                     .required())
-                    .valid.apply(_a, validSearches).validate(searchTerm);
-                if (validation.error)
+                    .valid.apply(_a, GeneralConfig_js_1.default.VALID_OBJECT_TYPES).validate(searchTerm, joiConfig);
+                if (validation.error) {
                     return [2 /*return*/, {
                             message: "ERROR: " + validation.error.message,
+                            status: 400,
                         }];
-                dynamoDBParams = {
+                }
+                params = {
                     TableName: "OpenATS",
                     IndexName: "AllByType",
                     KeyConditionExpression: "#type = :v_type",
@@ -91,21 +84,21 @@ var getAllByType = function (searchTerm) { return __awaiter(void 0, void 0, void
             case 1:
                 _b.trys.push([1, 3, , 4]);
                 results_1 = [];
-                return [4 /*yield*/, dynamodb.query(dynamoDBParams)];
+                return [4 /*yield*/, dynamodb.query(params)];
             case 2:
                 data = _b.sent();
                 do {
                     if (!data.Items)
-                        return [2 /*return*/, { message: searchTerm + " not found" }];
+                        return [2 /*return*/, { message: searchTerm + " not found", status: 404 }];
                     data.Items.forEach(function (item) { return results_1.push(item); });
-                    dynamoDBParams.ExclusiveStartKey = data.LastEvaluatedKey;
+                    params.ExclusiveStartKey = data.LastEvaluatedKey;
                     // Keep querying to get ALL results
                 } while (typeof data.LastEvaluatedKey !== "undefined");
-                return [2 /*return*/, results_1];
+                return [2 /*return*/, { message: results_1, status: 200 }];
             case 3:
                 error_1 = _b.sent();
                 console.error("Error getting " + searchTerm, error_1);
-                return [2 /*return*/, { message: "ERROR: " + error_1.message }];
+                return [2 /*return*/, { message: "ERROR: " + error_1.message, status: 500 }];
             case 4: return [2 /*return*/];
         }
     });

@@ -1,25 +1,22 @@
-import * as Joi from "joi";
-const idLength = 25;
+import Config from "../../../../config/GeneralConfig.js";
 import { DynamoDB } from "@aws-sdk/client-dynamodb";
-const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
-const joiConfig = {
-  abortEarly: false,
-  errors: {
-    wrap: {
-      label: "''",
-    },
-  },
-};
-const getApplicant = async (id: string): Promise<{ message: string }> => {
+import * as Joi from "joi";
+const idLength: number = Config.ID_GENERATION_LENGTH;
+const dynamodb = new DynamoDB(Config.DYNAMO_CONFIG);
+const joiConfig = Config.JOI_CONFIG;
+
+const getApplicant = async (
+  id: string
+): Promise<{ message: string | {}; status: number }> => {
   const validation = Joi.string()
     .required()
     .length(idLength)
     .validate(id, joiConfig);
 
   if (validation.error)
-    return { message: `ERROR: ${validation.error.message}` };
+    return { message: `ERROR: ${validation.error.message}`, status: 400 };
 
-  const dynamoDBParams = {
+  const params = {
     Key: {
       PK: {
         S: `APPLICANT#${id}`,
@@ -31,12 +28,12 @@ const getApplicant = async (id: string): Promise<{ message: string }> => {
     TableName: "OpenATS", // TODO use parameter store?
   };
   try {
-    const data = await dynamodb.getItem(dynamoDBParams);
-    if (!data.Item) return { message: "Applicant not found" };
-    return data.Item;
+    const data = await dynamodb.getItem(params);
+    if (!data.Item) return { message: "Applicant not found", status: 404 };
+    return { message: data.Item, status: 200 };
   } catch (error) {
     console.error(`Error getting applicant by id ${id}`, error);
-    return { message: `ERROR: ${error.message}` };
+    return { message: `ERROR: ${error.message}`, status: 500 };
   }
 };
 

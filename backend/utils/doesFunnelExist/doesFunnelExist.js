@@ -36,26 +36,30 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var createApplicant_1 = require("./createApplicant");
-var create = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var applicant, _a, _b;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
+var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
+var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
+/**
+ * @description Checks if a funnel exists
+ * @param funnelId - The id of the funnel that you want to check
+ * @returns true or false
+ */
+var doesFunnelExist = function (funnelId) { return __awaiter(void 0, void 0, void 0, function () {
+    var params, response;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
             case 0:
-                applicant = {
-                    email: "josev@openats.app",
-                    first_name: "Jose",
-                    last_name: "Valerio",
-                    phone_number: "4831284473",
-                    stage_title: "Ready To Drive",
-                    funnel_id: "123",
+                params = {
+                    TableName: "OpenATS",
+                    Key: {
+                        PK: { S: funnelId },
+                        SK: { S: funnelId },
+                    },
                 };
-                _b = (_a = console).log;
-                return [4 /*yield*/, createApplicant_1.default(applicant)];
+                return [4 /*yield*/, dynamodb.getItem(params)];
             case 1:
-                _b.apply(_a, [_c.sent()]);
-                return [2 /*return*/];
+                response = _a.sent();
+                return [2 /*return*/, response.Item ? response.Item : false];
         }
     });
 }); };
-create();
+exports.default = doesFunnelExist;

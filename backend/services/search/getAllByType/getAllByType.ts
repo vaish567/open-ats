@@ -9,44 +9,38 @@
  * Querying 4 million applicants = $0.00000025 * 20,000 = $0.005
  * Soooooo... do with that what you will. Use with caution.
  * TODO will Lambda's timeout even let you do that many queries? lol
- *
  */
 
 import { AttributeValue, DynamoDB } from "@aws-sdk/client-dynamodb";
-const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
+import Config, {
+  ValidTSObjectTypes,
+} from "../../../../config/GeneralConfig.js";
 import * as Joi from "joi";
-const validSearches: string[] = ["Applicant", "Stage", "Funnel", "Question"];
-const joiConfig = {
-  abortEarly: false,
-  errors: {
-    wrap: {
-      label: "''",
-    },
-  },
-};
-// Results, if found, will be in an array. Errors will be a message containing the error
+const dynamodb = new DynamoDB(Config.DYNAMO_CONFIG);
+const joiConfig = Config.JOI_CONFIG;
 const getAllByType = async (
-  searchTerm: "Applicant" | "Stage" | "Funnel" | "Question"
-): Promise<{ message: string } | any[]> => {
+  searchTerm: ValidTSObjectTypes
+): Promise<{ message: string | {}; status: number }> => {
   const validation = Joi.string()
     .required()
-    .valid(...validSearches)
-    .validate(searchTerm);
+    .valid(...Config.VALID_OBJECT_TYPES)
+    .validate(searchTerm, joiConfig);
 
-  if (validation.error)
+  if (validation.error) {
     return {
       message: `ERROR: ${validation.error.message}`,
+      status: 400,
     };
-
-  interface DBParams {
+  }
+  // Leave as let since we will query until done and ExclusiveStartKey will be changing
+  let params: {
     TableName: string;
     IndexName: string;
     KeyConditionExpression: string;
     ExpressionAttributeNames?: {};
     ExpressionAttributeValues?: {};
     ExclusiveStartKey?: { [key: string]: AttributeValue } | undefined;
-  } // TODO use in function params
-  const dynamoDBParams: DBParams = {
+  } = {
     TableName: "OpenATS",
     IndexName: "AllByType",
     KeyConditionExpression: "#type = :v_type",
@@ -60,17 +54,18 @@ const getAllByType = async (
   };
   try {
     let results: any[] = [];
-    const data = await dynamodb.query(dynamoDBParams);
+    let data = await dynamodb.query(params);
     do {
-      if (!data.Items) return { message: `${searchTerm} not found` };
+      if (!data.Items)
+        return { message: `${searchTerm} not found`, status: 404 };
       data.Items.forEach((item) => results.push(item));
-      dynamoDBParams.ExclusiveStartKey = data.LastEvaluatedKey;
+      params.ExclusiveStartKey = data.LastEvaluatedKey;
       // Keep querying to get ALL results
     } while (typeof data.LastEvaluatedKey !== "undefined");
-    return results;
+    return { message: results, status: 200 };
   } catch (error) {
     console.error(`Error getting ${searchTerm}`, error);
-    return { message: `ERROR: ${error.message}` };
+    return { message: `ERROR: ${error.message}`, status: 500 };
   }
 };
 export default getAllByType;

@@ -36,36 +36,105 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var doesFunnelExist_1 = require("../../../utils/doesFunnelExist/doesFunnelExist");
+var doesStageExist_1 = require("../../../utils/doesStageExist/doesStageExist");
+var GeneralConfig_js_1 = require("../../../../config/GeneralConfig.js");
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
-var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
+var Joi = require("joi");
+var STAGE_DESCRIPTION_LENGTH = GeneralConfig_js_1.default.STAGE_DESCRIPTION_MAX_LENGTH;
+var STAGE_TITLE_LENGTH = GeneralConfig_js_1.default.STAGE_TITLE_MAX_LENGTH;
+var idLength = GeneralConfig_js_1.default.ID_GENERATION_LENGTH;
+var dynamodb = new client_dynamodb_1.DynamoDB(GeneralConfig_js_1.default.DYNAMO_CONFIG);
+var joiConfig = GeneralConfig_js_1.default.JOI_CONFIG;
+var StageSchema = Joi.object({
+    STAGE_TITLE: Joi.string().required().max(STAGE_TITLE_LENGTH),
+    DESCRIPTION: Joi.string().max(STAGE_DESCRIPTION_LENGTH),
+    FUNNEL_ID: Joi.string().required().length(idLength),
+}).and("STAGE_TITLE", "FUNNEL_ID");
+/**
+ *
+ * @param stage
+ * @param STAGE_TITLE The stage title
+ * @param DESCRIPTION The description of this stage and what it does
+ * @param FUNNEL_ID The funnel ID of that this stage belongs to
+ * @returns
+ */
 var createStage = function (stage) { return __awaiter(void 0, void 0, void 0, function () {
-    var params, error_1;
+    var validation, responseFunnel, responseStage, params, error_1, error_2, error_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
+                validation = StageSchema.validate(stage, joiConfig);
+                if (validation.error)
+                    return [2 /*return*/, { message: "ERROR: " + validation.error.message, status: 400 }];
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 11, , 12]);
+                return [4 /*yield*/, doesFunnelExist_1.default(stage.FUNNEL_ID)];
+            case 2:
+                responseFunnel = _a.sent();
+                if (!responseFunnel)
+                    return [2 /*return*/, {
+                            message: "ERROR: Funnel ID " + stage.FUNNEL_ID + " does not exist, please create it first before trying to make a stage inside of it",
+                            status: 404,
+                        }];
+                _a.label = 3;
+            case 3:
+                _a.trys.push([3, 9, , 10]);
+                return [4 /*yield*/, doesStageExist_1.default(stage.FUNNEL_ID, stage.STAGE_TITLE)];
+            case 4:
+                responseStage = _a.sent();
+                if (responseStage)
+                    return [2 /*return*/, {
+                            message: "ERROR: Stage " + stage.STAGE_TITLE + " already exists in " + responseFunnel.FUNNEL_TITLE.S + ", please choose another name or update the existing stage",
+                            status: 409,
+                        }];
+                _a.label = 5;
+            case 5:
+                _a.trys.push([5, 7, , 8]);
                 params = {
                     Item: {
-                        PK: { S: stage.FUNNEL_ID },
-                        FUNNEL_ID: { S: stage.FUNNEL_ID },
-                        FUNNEL_TITLE: { S: "FUNNEL_TITLE#" + stage.FUNNEL_TITLE },
-                        SK: { S: "STAGE_TITLE#" + stage.TITLE },
+                        PK: { S: "FUNNEL#" + stage.FUNNEL_ID },
+                        SK: { S: "STAGE_TITLE#" + stage.STAGE_TITLE },
+                        DESCRIPTION: { S: stage.DESCRIPTION },
+                        FUNNEL_TITLE: {
+                            S: "FUNNEL_TITLE#" + responseFunnel.FUNNEL_TITLE.S,
+                        },
                         TYPE: { S: "Stage" },
                     },
                     TableName: "OpenATS",
                 };
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, dynamodb.putItem(params)];
-            case 2:
+            case 6:
                 _a.sent();
-                return [2 /*return*/, { message: "Succesfully created stage " + stage.TITLE }];
-            case 3:
-                error_1 = _a.sent();
                 return [2 /*return*/, {
-                        message: "An error occurred creating your stage - " + error_1.message,
+                        message: "Succesfully created stage " + stage.STAGE_TITLE + " in " + responseFunnel.FUNNEL_TITLE.S,
+                        status: 201,
                     }];
-            case 4: return [2 /*return*/];
+            case 7:
+                error_1 = _a.sent();
+                console.error("An error occurred creating your stage - " + error_1.message);
+                return [2 /*return*/, {
+                        message: "ERROR: Unable to create your stage - " + error_1.message,
+                        status: 500,
+                    }];
+            case 8: return [3 /*break*/, 10];
+            case 9:
+                error_2 = _a.sent();
+                console.error(error_2);
+                return [2 /*return*/, {
+                        message: "ERROR: Unable to check if stage already exists " + error_2.message,
+                        status: 500,
+                    }];
+            case 10: return [3 /*break*/, 12];
+            case 11:
+                error_3 = _a.sent();
+                console.error("A message occurred checking if funnel ID " + stage.FUNNEL_ID + " exists, unable to create stage: " + stage.STAGE_TITLE + " - " + error_3.message);
+                return [2 /*return*/, {
+                        message: "ERROR: Unable to check if funnel ID " + stage.FUNNEL_ID + " exists, was not able to create stage '" + stage.STAGE_TITLE + "' - " + error_3.message,
+                        status: 500,
+                    }];
+            case 12: return [2 /*return*/];
         }
     });
 }); };

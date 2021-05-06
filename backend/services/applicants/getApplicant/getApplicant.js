@@ -36,20 +36,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var Joi = require("joi");
-var idLength = 25;
+var GeneralConfig_js_1 = require("../../../../config/GeneralConfig.js");
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
-var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
-var joiConfig = {
-    abortEarly: false,
-    errors: {
-        wrap: {
-            label: "''",
-        },
-    },
-};
+var Joi = require("joi");
+var idLength = GeneralConfig_js_1.default.ID_GENERATION_LENGTH;
+var dynamodb = new client_dynamodb_1.DynamoDB(GeneralConfig_js_1.default.DYNAMO_CONFIG);
+var joiConfig = GeneralConfig_js_1.default.JOI_CONFIG;
 var getApplicant = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-    var validation, dynamoDBParams, data, error_1;
+    var validation, params, data, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -58,8 +52,8 @@ var getApplicant = function (id) { return __awaiter(void 0, void 0, void 0, func
                     .length(idLength)
                     .validate(id, joiConfig);
                 if (validation.error)
-                    return [2 /*return*/, { message: "ERROR: " + validation.error.message }];
-                dynamoDBParams = {
+                    return [2 /*return*/, { message: "ERROR: " + validation.error.message, status: 400 }];
+                params = {
                     Key: {
                         PK: {
                             S: "APPLICANT#" + id,
@@ -73,16 +67,16 @@ var getApplicant = function (id) { return __awaiter(void 0, void 0, void 0, func
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, dynamodb.getItem(dynamoDBParams)];
+                return [4 /*yield*/, dynamodb.getItem(params)];
             case 2:
                 data = _a.sent();
                 if (!data.Item)
-                    return [2 /*return*/, { message: "Applicant not found" }];
-                return [2 /*return*/, data.Item];
+                    return [2 /*return*/, { message: "Applicant not found", status: 404 }];
+                return [2 /*return*/, { message: data.Item, status: 200 }];
             case 3:
                 error_1 = _a.sent();
                 console.error("Error getting applicant by id " + id, error_1);
-                return [2 /*return*/, { message: "ERROR: " + error_1.message }];
+                return [2 /*return*/, { message: "ERROR: " + error_1.message, status: 500 }];
             case 4: return [2 /*return*/];
         }
     });
