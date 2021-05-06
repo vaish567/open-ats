@@ -12,25 +12,16 @@
  */
 
 import { AttributeValue, DynamoDB } from "@aws-sdk/client-dynamodb";
-const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
+import Config, {
+  ValidTSObjectTypes,
+} from "../../../../config/GeneralConfig.js";
 import * as Joi from "joi";
-const validSearches: string[] = ["Applicant", "Stage", "Funnel", "Question"];
-const joiConfig = {
-  // TODO make this a global variable? lol
-  abortEarly: false,
-  errors: {
-    wrap: {
-      label: "''",
-    },
-  },
-};
-
-const getAllByType = async (
-  searchTerm: "Applicant" | "Stage" | "Funnel" | "Question"
-) => {
+const dynamodb = new DynamoDB(Config.DYNAMO_CONFIG);
+const joiConfig = Config.JOI_CONFIG;
+const getAllByType = async (searchTerm: ValidTSObjectTypes) => {
   const validation = Joi.string()
     .required()
-    .valid(...validSearches)
+    .valid(...Config.VALID_OBJECT_TYPES)
     .validate(searchTerm, joiConfig);
 
   if (validation.error) {
@@ -38,15 +29,15 @@ const getAllByType = async (
       message: `ERROR: ${validation.error.message}`,
     };
   }
-  interface DBParams {
+  // Leave as let since we will query until done and ExclusiveStartKey will be changing
+  let params: {
     TableName: string;
     IndexName: string;
     KeyConditionExpression: string;
     ExpressionAttributeNames?: {};
     ExpressionAttributeValues?: {};
     ExclusiveStartKey?: { [key: string]: AttributeValue } | undefined;
-  } // TODO use in function params
-  let params: DBParams = {
+  } = {
     TableName: "OpenATS",
     IndexName: "AllByType",
     KeyConditionExpression: "#type = :v_type",

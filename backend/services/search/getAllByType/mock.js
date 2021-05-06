@@ -41,7 +41,7 @@ var getAll = function () { return __awaiter(void 0, void 0, void 0, function () 
     var x;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, getAllByType_1.default("Stage")];
+            case 0: return [4 /*yield*/, getAllByType_1.default("Applicant")];
             case 1:
                 x = _a.sent();
                 console.log(x);
