@@ -5,7 +5,9 @@ const idLength: number = Config.ID_GENERATION_LENGTH;
 const dynamodb = new DynamoDB(Config.DYNAMO_CONFIG);
 const joiConfig = Config.JOI_CONFIG;
 
-const getApplicant = async (id: string) => {
+const getApplicant = async (
+  id: string
+): Promise<{ message: string | {}; status: number }> => {
   const validation = Joi.string()
     .required()
     .length(idLength)

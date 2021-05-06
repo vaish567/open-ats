@@ -64,8 +64,11 @@ var doesFunnelExist = function (funnelId) { return __awaiter(void 0, void 0, voi
                 return [2 /*return*/, response.Item ? response.Item : false];
             case 3:
                 error_1 = _a.sent();
-                console.error("An error occurred checking if funnel " + funnelId + " exists", error_1);
-                return [3 /*break*/, 4];
+                console.error(error_1);
+                return [2 /*return*/, {
+                        message: "An error occurred checking if funnel " + funnelId + " exists",
+                        status: 500,
+                    }];
             case 4: return [2 /*return*/];
         }
     });

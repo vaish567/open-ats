@@ -26,7 +26,7 @@ const createStage = async (stage: {
   STAGE_TITLE: string;
   DESCRIPTION: string;
   FUNNEL_ID: string;
-}): Promise<{ message: string; status: number }> => {
+}): Promise<{ message: string | {}; status: number }> => {
   const validation = StageSchema.validate(stage, joiConfig);
   if (validation.error)
     return { message: `ERROR: ${validation.error.message}`, status: 400 };

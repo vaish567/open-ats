@@ -19,10 +19,11 @@ const doesFunnelExist = async (funnelId: string) => {
     const response = await dynamodb.getItem(params);
     return response.Item ? response.Item : false;
   } catch (error) {
-    console.error(
-      `An error occurred checking if funnel ${funnelId} exists`,
-      error
-    );
+    console.error(error);
+    return {
+      message: `An error occurred checking if funnel ${funnelId} exists`,
+      status: 500,
+    };
   }
 };
 export default doesFunnelExist;

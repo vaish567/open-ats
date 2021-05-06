@@ -18,7 +18,9 @@ import Config, {
 import * as Joi from "joi";
 const dynamodb = new DynamoDB(Config.DYNAMO_CONFIG);
 const joiConfig = Config.JOI_CONFIG;
-const getAllByType = async (searchTerm: ValidTSObjectTypes) => {
+const getAllByType = async (
+  searchTerm: ValidTSObjectTypes
+): Promise<{ message: string | {}; status: number }> => {
   const validation = Joi.string()
     .required()
     .valid(...Config.VALID_OBJECT_TYPES)

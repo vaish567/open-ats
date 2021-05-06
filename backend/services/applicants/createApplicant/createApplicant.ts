@@ -37,7 +37,7 @@ const createApplicant = async (applicant: {
   phone_number: string;
   stage_title: string;
   funnel_id: string;
-}) => {
+}): Promise<{ message: string | {}; status: number }> => {
   // TS will yell at you in the meantime btw
   const validation = ApplicantSchema.validate(applicant, joiConfig);
   if (validation.error)

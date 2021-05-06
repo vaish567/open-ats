@@ -19,7 +19,7 @@ const createFunnel = async (funnel: {
     fixedDescription?: string;
     currency: string;
   };
-}) => {
+}): Promise<{ message: string; status: number }> => {
   const FunnelSchema = Joi.object({
     title: Joi.string().required(),
     locations: Joi.array().items(Joi.string()).required(),
