@@ -67,6 +67,7 @@ var doesStageExist = function (funnelId, stageName) { return __awaiter(void 0, v
                 error_1 = _a.sent();
                 return [2 /*return*/, {
                         message: "ERROR: Unable to check if your stage exists " + error_1.message,
+                        status: 500,
                     }];
             case 4: return [2 /*return*/];
         }

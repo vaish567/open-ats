@@ -22,6 +22,7 @@ const doesStageExist = async (funnelId: string, stageName: string) => {
   } catch (error) {
     return {
       message: `ERROR: Unable to check if your stage exists ${error.message}`,
+      status: 500,
     };
   }
 };
