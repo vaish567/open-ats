@@ -1,25 +1,19 @@
-import { DynamoDB } from "@aws-sdk/client-dynamodb";
-import * as Joi from "joi";
-import { nanoid } from "nanoid";
 import doesFunnelExist from "../../../utils/doesFunnelExist/doesFunnelExist";
 import doesStageExist from "../../../utils/doesStageExist/doesStageExist";
+import Config from "../../../../config/GeneralConfig.js";
+import { DynamoDB } from "@aws-sdk/client-dynamodb";
+import { nanoid } from "nanoid";
+import * as Joi from "joi";
+const dynamodb = new DynamoDB(Config.DYNAMO_CONFIG);
+const idLength = Config.ID_GENERATION_LENGTH;
+const joiConfig = Config.JOI_CONFIG;
 
-const idLength = 25;
-const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
-const joiConfig = {
-  abortEarly: false,
-  errors: {
-    wrap: {
-      label: "''",
-    },
-  },
-};
 const ApplicantSchema = Joi.object({
   email: Joi.string().email().required(),
-  first_name: Joi.string().required().max(50),
-  last_name: Joi.string().required().max(50),
+  first_name: Joi.string().required().max(Config.FIRST_NAME_MAX_LENGTH),
+  last_name: Joi.string().required().max(Config.LAST_NAME_MAX_LENGTH),
   phone_number: Joi.string()
-    .length(10)
+    .length(10) // TODO add international support
     .pattern(/^[0-9]+$/)
     .required(),
   funnel_id: Joi.string(),

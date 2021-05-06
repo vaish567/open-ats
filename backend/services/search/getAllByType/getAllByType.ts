@@ -12,25 +12,18 @@
  */
 
 import { AttributeValue, DynamoDB } from "@aws-sdk/client-dynamodb";
-const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
+import Config from "../../../../config/GeneralConfig.js";
 import * as Joi from "joi";
-const validSearches: string[] = ["Applicant", "Stage", "Funnel", "Question"];
-const joiConfig = {
-  // TODO make this a global variable? lol
-  abortEarly: false,
-  errors: {
-    wrap: {
-      label: "''",
-    },
-  },
-};
+const dynamodb = new DynamoDB(Config.DYNAMO_CONFIG);
+const validTypes: string[] = Config.VALID_TYPES;
+const joiConfig = Config.JOI_CONFIG;
 
 const getAllByType = async (
   searchTerm: "Applicant" | "Stage" | "Funnel" | "Question"
 ) => {
   const validation = Joi.string()
     .required()
-    .valid(...validSearches)
+    .valid(...validTypes)
     .validate(searchTerm, joiConfig);
 
   if (validation.error) {

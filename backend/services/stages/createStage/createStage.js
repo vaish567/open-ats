@@ -36,25 +36,19 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var doesFunnelExist_1 = require("../../../utils/doesFunnelExist/doesFunnelExist");
 var doesStageExist_1 = require("../../../utils/doesStageExist/doesStageExist");
+var GeneralConfig_js_1 = require("../../../../config/GeneralConfig.js");
+var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var Joi = require("joi");
-var idLength = 25; // TODO move over to parameter store?
-var stageTitleLength = 200;
-var descriptionLength = 2000;
-var joiConfig = {
-    abortEarly: false,
-    errors: {
-        wrap: {
-            label: "''",
-        },
-    },
-};
-var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
+var STAGE_DESCRIPTION_LENGTH = GeneralConfig_js_1.default.STAGE_DESCRIPTION_MAX_LENGTH;
+var STAGE_TITLE_LENGTH = GeneralConfig_js_1.default.STAGE_TITLE_MAX_LENGTH;
+var idLength = GeneralConfig_js_1.default.ID_GENERATION_LENGTH;
+var dynamodb = new client_dynamodb_1.DynamoDB(GeneralConfig_js_1.default.DYNAMO_CONFIG);
+var joiConfig = GeneralConfig_js_1.default.JOI_CONFIG;
 var StageSchema = Joi.object({
-    STAGE_TITLE: Joi.string().required().max(stageTitleLength),
-    DESCRIPTION: Joi.string().max(descriptionLength),
+    STAGE_TITLE: Joi.string().required().max(STAGE_TITLE_LENGTH),
+    DESCRIPTION: Joi.string().max(STAGE_DESCRIPTION_LENGTH),
     FUNNEL_ID: Joi.string().required().length(idLength),
 }).and("STAGE_TITLE", "FUNNEL_ID");
 /**

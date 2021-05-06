@@ -36,27 +36,21 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
-var Joi = require("joi");
-var nanoid_1 = require("nanoid");
 var doesFunnelExist_1 = require("../../../utils/doesFunnelExist/doesFunnelExist");
 var doesStageExist_1 = require("../../../utils/doesStageExist/doesStageExist");
-var idLength = 25;
-var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
-var joiConfig = {
-    abortEarly: false,
-    errors: {
-        wrap: {
-            label: "''",
-        },
-    },
-};
+var GeneralConfig_js_1 = require("../../../../config/GeneralConfig.js");
+var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
+var nanoid_1 = require("nanoid");
+var Joi = require("joi");
+var dynamodb = new client_dynamodb_1.DynamoDB(GeneralConfig_js_1.default.DYNAMO_CONFIG);
+var idLength = GeneralConfig_js_1.default.ID_GENERATION_LENGTH;
+var joiConfig = GeneralConfig_js_1.default.JOI_CONFIG;
 var ApplicantSchema = Joi.object({
     email: Joi.string().email().required(),
-    first_name: Joi.string().required().max(50),
-    last_name: Joi.string().required().max(50),
+    first_name: Joi.string().required().max(GeneralConfig_js_1.default.FIRST_NAME_MAX_LENGTH),
+    last_name: Joi.string().required().max(GeneralConfig_js_1.default.LAST_NAME_MAX_LENGTH),
     phone_number: Joi.string()
-        .length(10)
+        .length(10) // TODO add international support
         .pattern(/^[0-9]+$/)
         .required(),
     funnel_id: Joi.string(),

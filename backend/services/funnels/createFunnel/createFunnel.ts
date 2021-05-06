@@ -1,24 +1,13 @@
+import Config from "../../../../config/GeneralConfig.js";
 import { DynamoDB } from "@aws-sdk/client-dynamodb";
-const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
 import { nanoid } from "nanoid";
 import * as Joi from "joi";
-const idLength = 25; // TODO make this a global variable?
-const descriptionMaxLength = 2000; // TODO make this a global variable?
-const salaryTypes = [
-  "Salary",
-  "Hourly",
-  "Commission",
-  "Dynamic (Per Delivery, Per Task, etc.)",
-];
-const JoiConfig = {
-  // TODO make this a global variable? lol
-  abortEarly: false,
-  errors: {
-    wrap: {
-      label: "''",
-    },
-  },
-};
+const descriptionMaxLength = Config.FUNNEL_DESCRIPTION_MAX_LENGTH;
+const idLength: number = Config.ID_GENERATION_LENGTH;
+const dynamodb = new DynamoDB(Config.DYNAMO_CONFIG);
+const payTypes = Config.PAY_TYPES;
+const JoiConfig = Config.JOI_CONFIG;
+
 const createFunnel = async (funnel: {
   title: string;
   description: string;
@@ -41,7 +30,7 @@ const createFunnel = async (funnel: {
     locations: Joi.array().items(Joi.string()).required(),
     description: Joi.string().max(descriptionMaxLength).required(),
     pay: Joi.object({
-      type: Joi.valid(...salaryTypes).required(),
+      type: Joi.valid(...payTypes).required(),
       lowEnd: Joi.string(),
       highEnd: Joi.string(),
       fixed: Joi.string(),

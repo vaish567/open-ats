@@ -1,23 +1,17 @@
-import { DynamoDB } from "@aws-sdk/client-dynamodb";
 import doesFunnelExist from "../../../utils/doesFunnelExist/doesFunnelExist";
 import doesStageExist from "../../../utils/doesStageExist/doesStageExist";
+import Config from "../../../../config/GeneralConfig.js";
+import { DynamoDB } from "@aws-sdk/client-dynamodb";
 import * as Joi from "joi";
-const idLength = 25; // TODO move over to parameter store?
-const stageTitleLength = 200;
-const descriptionLength = 2000;
-const joiConfig = {
-  abortEarly: false,
-  errors: {
-    wrap: {
-      label: "''",
-    },
-  },
-};
-const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
+const STAGE_DESCRIPTION_LENGTH: number = Config.STAGE_DESCRIPTION_MAX_LENGTH;
+const STAGE_TITLE_LENGTH: number = Config.STAGE_TITLE_MAX_LENGTH;
+const idLength: number = Config.ID_GENERATION_LENGTH;
+const dynamodb = new DynamoDB(Config.DYNAMO_CONFIG);
+const joiConfig = Config.JOI_CONFIG;
 
 const StageSchema = Joi.object({
-  STAGE_TITLE: Joi.string().required().max(stageTitleLength),
-  DESCRIPTION: Joi.string().max(descriptionLength),
+  STAGE_TITLE: Joi.string().required().max(STAGE_TITLE_LENGTH),
+  DESCRIPTION: Joi.string().max(STAGE_DESCRIPTION_LENGTH),
   FUNNEL_ID: Joi.string().required().length(idLength),
 }).and("STAGE_TITLE", "FUNNEL_ID");
 /**

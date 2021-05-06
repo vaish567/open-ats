@@ -1,16 +1,10 @@
-import * as Joi from "joi";
-const idLength = 25; // TODO make this a global variable
+import Config from "../../../../config/GeneralConfig.js";
 import { DynamoDB } from "@aws-sdk/client-dynamodb";
-const dynamodb = new DynamoDB({ apiVersion: "2012-08-10" });
-const joiConfig = {
-  // TODO make this a global variable
-  abortEarly: false,
-  errors: {
-    wrap: {
-      label: "''",
-    },
-  },
-};
+import * as Joi from "joi";
+const idLength: number = Config.ID_GENERATION_LENGTH;
+const dynamodb = new DynamoDB(Config.DYNAMO_CONFIG);
+const joiConfig = Config.JOI_CONFIG;
+
 const getApplicant = async (id: string) => {
   const validation = Joi.string()
     .required()

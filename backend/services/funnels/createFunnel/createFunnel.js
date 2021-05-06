@@ -36,27 +36,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var GeneralConfig_js_1 = require("../../../../config/GeneralConfig.js");
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
-var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
 var nanoid_1 = require("nanoid");
 var Joi = require("joi");
-var idLength = 25; // TODO make this a global variable?
-var descriptionMaxLength = 2000; // TODO make this a global variable?
-var salaryTypes = [
-    "Salary",
-    "Hourly",
-    "Commission",
-    "Dynamic (Per Delivery, Per Task, etc.)",
-];
-var JoiConfig = {
-    // TODO make this a global variable? lol
-    abortEarly: false,
-    errors: {
-        wrap: {
-            label: "''",
-        },
-    },
-};
+var descriptionMaxLength = GeneralConfig_js_1.default.FUNNEL_DESCRIPTION_MAX_LENGTH;
+var idLength = GeneralConfig_js_1.default.ID_GENERATION_LENGTH;
+var dynamodb = new client_dynamodb_1.DynamoDB(GeneralConfig_js_1.default.DYNAMO_CONFIG);
+var payTypes = GeneralConfig_js_1.default.PAY_TYPES;
+var JoiConfig = GeneralConfig_js_1.default.JOI_CONFIG;
 var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, function () {
     var FunnelSchema, validation, newFunnelId, _a, type, lowEnd, highEnd, currency, fixed, fixedDescription, params, error_1;
     return __generator(this, function (_b) {
@@ -67,7 +55,7 @@ var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, 
                     locations: Joi.array().items(Joi.string()).required(),
                     description: Joi.string().max(descriptionMaxLength).required(),
                     pay: Joi.object({
-                        type: Joi.valid.apply(Joi, salaryTypes).required(),
+                        type: Joi.valid.apply(Joi, payTypes).required(),
                         lowEnd: Joi.string(),
                         highEnd: Joi.string(),
                         fixed: Joi.string(),
