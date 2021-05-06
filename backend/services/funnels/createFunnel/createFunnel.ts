@@ -13,11 +13,7 @@ const createFunnel = async (funnel: {
   description: string;
   locations: string[];
   pay: {
-    type:
-      | "Salary"
-      | "Hourly"
-      | "Commission"
-      | "Dynamic (Per Delivery, Per Task, etc.)";
+    type: typeof Config.PAY_TYPES;
     lowEnd?: string;
     highEnd?: string;
     fixed?: string;

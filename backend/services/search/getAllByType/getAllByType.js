@@ -52,7 +52,6 @@ var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var GeneralConfig_js_1 = require("../../../../config/GeneralConfig.js");
 var Joi = require("joi");
 var dynamodb = new client_dynamodb_1.DynamoDB(GeneralConfig_js_1.default.DYNAMO_CONFIG);
-var validTypes = GeneralConfig_js_1.default.VALID_TYPES;
 var joiConfig = GeneralConfig_js_1.default.JOI_CONFIG;
 var getAllByType = function (searchTerm) { return __awaiter(void 0, void 0, void 0, function () {
     var validation, params, results_1, data, error_1;
@@ -62,7 +61,7 @@ var getAllByType = function (searchTerm) { return __awaiter(void 0, void 0, void
             case 0:
                 validation = (_a = Joi.string()
                     .required())
-                    .valid.apply(_a, validTypes).validate(searchTerm, joiConfig);
+                    .valid.apply(_a, GeneralConfig_js_1.default.VALID_OBJECT_TYPES).validate(searchTerm, joiConfig);
                 if (validation.error) {
                     return [2 /*return*/, {
                             message: "ERROR: " + validation.error.message,
