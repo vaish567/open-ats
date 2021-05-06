@@ -16,14 +16,9 @@ const doesStageExist = async (funnelId: string, stageName: string) => {
     },
   };
 
-  try {
-    const response = await dynamodb.getItem(params);
-    return response.Item ? response.Item : false;
-  } catch (error) {
-    return {
-      message: `ERROR: Unable to check if your stage exists ${error.message}`,
-      status: 500,
-    };
-  }
+  // TryCatch should be handled at the function level that will be calling this
+  const response = await dynamodb.getItem(params);
+  return response.Item ? response.Item : false;
 };
+
 export default doesStageExist;
