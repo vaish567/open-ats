@@ -19,7 +19,7 @@ const createFunnel = async (funnel: {
     fixedDescription?: string;
     currency: string;
   };
-}) => {
+}): Promise<{ message: string; status: number }> => {
   const FunnelSchema = Joi.object({
     title: Joi.string().required(),
     locations: Joi.array().items(Joi.string()).required(),
@@ -43,6 +43,7 @@ const createFunnel = async (funnel: {
   if (validation.error) {
     return {
       message: `ERROR: ${validation.error.message}`,
+      status: 400,
     };
   }
 
@@ -80,11 +81,12 @@ const createFunnel = async (funnel: {
   console.log(JSON.stringify(params));
   try {
     await dynamodb.putItem(params);
-    return { message: `Funnel  ${funnel.title} created!` };
+    return { message: `Funnel  ${funnel.title} created!`, status: 201 };
   } catch (error) {
     console.error(`Error occurred creating a funnel`, error);
     return {
       message: `ERROR: Unable to create your funnel - ${error.message}`,
+      status: 500,
     };
   }
 };

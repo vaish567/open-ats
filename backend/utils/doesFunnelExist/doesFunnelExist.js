@@ -44,7 +44,7 @@ var dynamodb = new client_dynamodb_1.DynamoDB({ apiVersion: "2012-08-10" });
  * @returns true or false
  */
 var doesFunnelExist = function (funnelId) { return __awaiter(void 0, void 0, void 0, function () {
-    var params, response, error_1;
+    var params, response;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -55,18 +55,10 @@ var doesFunnelExist = function (funnelId) { return __awaiter(void 0, void 0, voi
                         SK: { S: funnelId },
                     },
                 };
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, dynamodb.getItem(params)];
-            case 2:
+            case 1:
                 response = _a.sent();
                 return [2 /*return*/, response.Item ? response.Item : false];
-            case 3:
-                error_1 = _a.sent();
-                console.error("An error occurred checking if funnel " + funnelId + " exists", error_1);
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
         }
     });
 }); };

@@ -71,6 +71,7 @@ var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, 
                 if (validation.error) {
                     return [2 /*return*/, {
                             message: "ERROR: " + validation.error.message,
+                            status: 400,
                         }];
                 }
                 newFunnelId = nanoid_1.nanoid(idLength);
@@ -104,12 +105,13 @@ var createFunnel = function (funnel) { return __awaiter(void 0, void 0, void 0, 
                 return [4 /*yield*/, dynamodb.putItem(params)];
             case 2:
                 _b.sent();
-                return [2 /*return*/, { message: "Funnel  " + funnel.title + " created!" }];
+                return [2 /*return*/, { message: "Funnel  " + funnel.title + " created!", status: 201 }];
             case 3:
                 error_1 = _b.sent();
                 console.error("Error occurred creating a funnel", error_1);
                 return [2 /*return*/, {
                         message: "ERROR: Unable to create your funnel - " + error_1.message,
+                        status: 500,
                     }];
             case 4: return [2 /*return*/];
         }

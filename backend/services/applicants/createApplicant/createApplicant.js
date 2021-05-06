@@ -60,23 +60,30 @@ var ApplicantSchema = Joi.object({
 // Fountain just uses a 'data' attribute and all custom data fields go in there
 // Might be a good idea
 var createApplicant = function (applicant) { return __awaiter(void 0, void 0, void 0, function () {
-    var validation, _a, funnelExists, stageExists, applicantId, params, error_1;
+    var validation, _a, funnelExists, stageExists, applicantId, params, error_1, error_2;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
                 validation = ApplicantSchema.validate(applicant, joiConfig);
                 if (validation.error)
-                    return [2 /*return*/, { message: "ERROR: " + validation.error.message }];
+                    return [2 /*return*/, { message: "ERROR: " + validation.error.message, status: 400 }];
+                _b.label = 1;
+            case 1:
+                _b.trys.push([1, 7, , 8]);
                 return [4 /*yield*/, Promise.all([
                         doesFunnelExist_1.default(applicant.funnel_id),
                         doesStageExist_1.default(applicant.funnel_id, applicant.stage_title),
                     ])];
-            case 1:
+            case 2:
                 _a = _b.sent(), funnelExists = _a[0], stageExists = _a[1];
                 if (!funnelExists || !stageExists)
                     return [2 /*return*/, {
                             message: "ERROR: The funnel + stage combination in which you are trying to place this applicant in (Funnel ID: '" + applicant.funnel_id + "' / Stage Title: '" + applicant.stage_title + "') does not exist",
+                            status: 404,
                         }];
+                _b.label = 3;
+            case 3:
+                _b.trys.push([3, 5, , 6]);
                 applicantId = nanoid_1.nanoid(idLength);
                 params = {
                     Item: {
@@ -98,22 +105,29 @@ var createApplicant = function (applicant) { return __awaiter(void 0, void 0, vo
                     },
                     TableName: "OpenATS", // TODO parameter store???
                 };
-                _b.label = 2;
-            case 2:
-                _b.trys.push([2, 4, , 5]);
                 return [4 /*yield*/, dynamodb.putItem(params)];
-            case 3:
+            case 4:
                 _b.sent();
                 return [2 /*return*/, {
                         message: "Applicant created succesfully!",
+                        status: 201,
                     }];
-            case 4:
+            case 5:
                 error_1 = _b.sent();
                 console.error(error_1);
                 return [2 /*return*/, {
                         message: "ERROR: Unable to create your applicant - " + error_1.message,
+                        status: 500,
                     }];
-            case 5: return [2 /*return*/];
+            case 6: return [3 /*break*/, 8];
+            case 7:
+                error_2 = _b.sent();
+                console.error(error_2);
+                return [2 /*return*/, {
+                        message: "An error occurred checking if funnel " + applicant.funnel_id + " exists",
+                        status: 500,
+                    }];
+            case 8: return [2 /*return*/];
         }
     });
 }); };
