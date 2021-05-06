@@ -27,6 +27,7 @@ const getAllByType = async (searchTerm: ValidTSObjectTypes) => {
   if (validation.error) {
     return {
       message: `ERROR: ${validation.error.message}`,
+      status: 400,
     };
   }
   // Leave as let since we will query until done and ExclusiveStartKey will be changing
@@ -53,15 +54,16 @@ const getAllByType = async (searchTerm: ValidTSObjectTypes) => {
     let results: any[] = [];
     let data = await dynamodb.query(params);
     do {
-      if (!data.Items) return { message: `${searchTerm} not found` };
+      if (!data.Items)
+        return { message: `${searchTerm} not found`, status: 404 };
       data.Items.forEach((item) => results.push(item));
       params.ExclusiveStartKey = data.LastEvaluatedKey;
       // Keep querying to get ALL results
     } while (typeof data.LastEvaluatedKey !== "undefined");
-    return results;
+    return { message: results, status: 200 };
   } catch (error) {
     console.error(`Error getting ${searchTerm}`, error);
-    return { message: `ERROR: ${error.message}` };
+    return { message: `ERROR: ${error.message}`, status: 500 };
   }
 };
 export default getAllByType;

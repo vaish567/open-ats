@@ -65,6 +65,7 @@ var getAllByType = function (searchTerm) { return __awaiter(void 0, void 0, void
                 if (validation.error) {
                     return [2 /*return*/, {
                             message: "ERROR: " + validation.error.message,
+                            status: 400,
                         }];
                 }
                 params = {
@@ -88,16 +89,16 @@ var getAllByType = function (searchTerm) { return __awaiter(void 0, void 0, void
                 data = _b.sent();
                 do {
                     if (!data.Items)
-                        return [2 /*return*/, { message: searchTerm + " not found" }];
+                        return [2 /*return*/, { message: searchTerm + " not found", status: 404 }];
                     data.Items.forEach(function (item) { return results_1.push(item); });
                     params.ExclusiveStartKey = data.LastEvaluatedKey;
                     // Keep querying to get ALL results
                 } while (typeof data.LastEvaluatedKey !== "undefined");
-                return [2 /*return*/, results_1];
+                return [2 /*return*/, { message: results_1, status: 200 }];
             case 3:
                 error_1 = _b.sent();
                 console.error("Error getting " + searchTerm, error_1);
-                return [2 /*return*/, { message: "ERROR: " + error_1.message }];
+                return [2 /*return*/, { message: "ERROR: " + error_1.message, status: 500 }];
             case 4: return [2 /*return*/];
         }
     });
