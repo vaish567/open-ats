@@ -6,7 +6,7 @@
 
 OpenATS is an attempt to create a modern, ⚡ serverless ⚡, event driven implementation of your typical applicant tracking system.
 
-FYI: I will be using the term 'funnel' instead of 'job'. The reason for this is that a 'job' does not have to be a solid title like '_Engineer_'. It could instead refer to a city in which a food delivery company might operate in and 'job' doesn't fit this use case.
+I will be using the term 'funnel' instead of 'job'. The reason for this is that a 'job' does not have to be a solid title like '_Engineer_'. It could instead refer to a city in which a food delivery company might operate in and 'job' doesn't fit this use case.
 
 > - We need more drivers in the Boston funnel for this week ✅
 > - Let's send an email to everyone in the Miami 'Questionnaire' funnel ✅
@@ -21,10 +21,7 @@ Overall, the premise is simple:
 
 #### Tech
 
-A React frontend hosted on S3 + Cloudfront and a NodeJS backend running on AWS Lambda with the [Serverless framework](https://www.serverless.com/). As of 2021-05-02, I have not decided on a search engine, but I am leaning towards [MeiliSearch](meilisearch.com). Ideally, a Lambda can pick up the DynamoDB streams and send it over to the EC2 instance running Meili. Elastic just seems too expensive :/
-At the very basic level, this is what we are trying to build:
-
-![Serverless 3 Tier Architecture - Ric Harvey - https://www.slideshare.net/AmazonWebServices/serverless-architecture-patterns-95098980](images/sls3tier.jpeg)
+We'll be using the [Serverless-NextJS component](https://github.com/serverless-nextjs/serverless-next.js) to have extremely fast API calls anywhere in the world with Lambda@Edge and DynamoDB global tables.
 
 I tried to follow [Alex DeBrie's best practices](https://www.youtube.com/watch?v=DIQVJqiSUkE) because after all, he **literally** [wrote the book](https://www.dynamodbbook.com/) on it. Also, huge shoutout to Rick Houlihan and [his talk](https://www.youtube.com/watch?v=HaEPXoXVf2k&).
 

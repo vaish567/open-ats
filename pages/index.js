@@ -6,7 +6,7 @@ import {
   EmojiHappyIcon,
 } from "@heroicons/react/outline";
 
-import SocialFooter from "./components/SocialFooter";
+import SocialFooter from "../components/SocialFooter";
 const features = [
   {
     name: "Open source",
@@ -19,7 +19,7 @@ const features = [
   {
     name: "No servers to manage",
     description:
-      "Worrying about servers is sooooo 5 years ago. Deployment is quick and easy with the Serverless framework",
+      "Spend time on what matters. Deployment is quick and easy with the Serverless framework",
     icon: LightningBoltIcon,
     iconColor: `bg-gradient-to-r from-yellow-400 to-yellow-500`,
   },
@@ -32,8 +32,7 @@ const features = [
   },
   {
     name: "Developer experience",
-    description:
-      "N.E.R.D.T. stack (that's a thing right?) Node, Express, React, DynamoDB, TypeScript",
+    description: "Same tools you're already using - NextJS, TailwindCSS, AWS",
     icon: EmojiHappyIcon,
     iconColor: `bg-gradient-to-r from-indigo-400 to-indigo-500`,
   },
