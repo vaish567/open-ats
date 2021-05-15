@@ -21,7 +21,7 @@ Overall, the premise is simple:
 
 #### Tech
 
-We'll be using the [Serverless-NextJS component](https://github.com/serverless-nextjs/serverless-next.js) to have global coverage with Lambda@Edge and DynamoDB global tables.
+We'll be using the [Serverless-NextJS component](https://github.com/serverless-nextjs/serverless-next.js) to have extremely fast API calls anywhere in the world with Lambda@Edge and DynamoDB global tables.
 
 I tried to follow [Alex DeBrie's best practices](https://www.youtube.com/watch?v=DIQVJqiSUkE) because after all, he **literally** [wrote the book](https://www.dynamodbbook.com/) on it. Also, huge shoutout to Rick Houlihan and [his talk](https://www.youtube.com/watch?v=HaEPXoXVf2k&).
 
