@@ -1,1 +1,0 @@
-This folder is specifically for third party icons, such as Tabler Icons (tablericons.com) whenever HeroIcons is not sufficient
