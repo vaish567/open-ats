@@ -8,8 +8,10 @@
     "start": "next start"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.16.0",
     "@heroicons/react": "^1.0.1",
     "@sls-next/serverless-component": "^1.19.0",
+    "nanoid": "^3.1.23",
     "next": "10.2.0",
     "react": "17.0.2",
     "react-dom": "17.0.2"
