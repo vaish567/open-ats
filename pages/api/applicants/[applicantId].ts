@@ -15,6 +15,7 @@ const client = new DynamoDBClient(DYNAMO_CONFIG);
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method == "POST") {
+    // TODO this should be moved to index.ts as that is the main route /applicants to create
     const applicant: {
       first_name: string;
       last_name: string;
