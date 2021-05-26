@@ -1,12 +1,17 @@
 import doesFunnelExist from "../../../utils/doesFunnelExist/doesFunnelExist";
 import doesStageExist from "../../../utils/doesStageExist/doesStageExist";
-import { ID_LENGTH, DYNAMO_CONFIG } from "../../../config/GeneralConfig";
+import {
+  ID_LENGTH,
+  DYNAMO_CONFIG,
+  DYNAMO_TABLE_NAME,
+} from "../../../config/GeneralConfig";
 import { NextApiRequest, NextApiResponse } from "next";
 import { nanoid } from "nanoid";
 
 const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
+const { marshall, unmarshall } = require("@aws-sdk/util-dynamodb"); // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/modules/_aws_sdk_util_dynamodb.html
+
 const client = new DynamoDBClient(DYNAMO_CONFIG);
-const command = new PutItemCommand({});
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method == "POST") {
@@ -33,45 +38,44 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       try {
         const applicantId = nanoid(ID_LENGTH);
         const params = {
-          Item: {
-            PK: { S: `APPLICANT#${applicantId}` },
-            SK: { S: `APPLICANT#${applicantId}` },
-            TYPE: { S: "Applicant" },
-            APPLICANT_ID: { S: applicantId },
-            CREATED_AT: { S: new Date().toISOString() },
-            CURRENT_FUNNEL_ID: { S: applicant.funnel_id },
-            CURRENT_FUNNEL_TITLE: { S: funnelExists.FUNNEL_TITLE.S! },
+          Item: marshall({
+            PK: `APPLICANT#${applicantId}`,
+            SK: `APPLICANT#${applicantId}`,
+            TYPE: "Applicant",
+            APPLICANT_ID: applicantId,
+            CREATED_AT: new Date().toISOString(),
+            CURRENT_FUNNEL_ID: applicant.funnel_id,
+            CURRENT_FUNNEL_TITLE: funnelExists.FUNNEL_TITLE.S!,
             // Without exclamation mark, TS will throw an error ^
             // We can guarantee that if a funnel exists, it will have a title
-            CURRENT_STAGE_TITLE: { S: `STAGE_TITLE#${applicant.stage_title}` },
-            EMAIL: { S: applicant.email },
-            FIRST_NAME: { S: applicant.first_name },
-            LAST_NAME: { S: applicant.last_name },
-            FULL_NAME: { S: `${applicant.first_name} ${applicant.last_name}` },
-            PHONE_NUMBER: { S: applicant.phone_number },
-          },
-          TableName: "OpenATS", // TODO parameter store???
+            CURRENT_STAGE_TITLE: `STAGE_TITLE#${applicant.stage_title}`,
+            EMAIL: applicant.email,
+            FIRST_NAME: applicant.first_name,
+            LAST_NAME: applicant.last_name,
+            FULL_NAME: `${applicant.first_name} ${applicant.last_name}`,
+            PHONE_NUMBER: applicant.phone_number,
+          }),
+          TableName: DYNAMO_TABLE_NAME,
+          ReturnValues: "ALL_NEW",
         };
 
         // Add applicant
-        await client.send(command);
-        return {
-          message: "Applicant created succesfully!",
-          status: 201,
-        };
+        const command = new PutItemCommand(params);
+        const response = await client.send(command);
+        return res
+          .status(201)
+          .json({ message: `Applicant created succesfully!` });
       } catch (error) {
         console.error(error);
-        return {
+        res.status(error.status).json({
           message: `ERROR: Unable to create your applicant - ${error.message}`,
-          status: 500,
-        };
+        });
       }
     } catch (error) {
       console.error(error);
-      return {
+      res.status(error.status).json({
         message: `An error occurred checking if funnel ${applicant.funnel_id} exists`,
-        status: 500,
-      };
+      });
     }
   }
 

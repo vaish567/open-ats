@@ -44,10 +44,10 @@ var doesStageExist_1 = __importDefault(require("../../../utils/doesStageExist/do
 var GeneralConfig_1 = require("../../../config/GeneralConfig");
 var nanoid_1 = require("nanoid");
 var _a = require("@aws-sdk/client-dynamodb"), DynamoDBClient = _a.DynamoDBClient, PutItemCommand = _a.PutItemCommand;
+var _b = require("@aws-sdk/util-dynamodb"), marshall = _b.marshall, unmarshall = _b.unmarshall; // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/modules/_aws_sdk_util_dynamodb.html
 var client = new DynamoDBClient(GeneralConfig_1.DYNAMO_CONFIG);
-var command = new PutItemCommand({});
 exports.default = (function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var applicant, _a, funnelExists, stageExists, applicantId, params, error_1, error_2;
+    var applicant, _a, funnelExists, stageExists, applicantId, params, command, response, error_1, error_2;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -71,49 +71,48 @@ exports.default = (function (req, res) { return __awaiter(void 0, void 0, void 0
                 _b.trys.push([3, 5, , 6]);
                 applicantId = nanoid_1.nanoid(GeneralConfig_1.ID_LENGTH);
                 params = {
-                    Item: {
-                        PK: { S: "APPLICANT#" + applicantId },
-                        SK: { S: "APPLICANT#" + applicantId },
-                        TYPE: { S: "Applicant" },
-                        APPLICANT_ID: { S: applicantId },
-                        CREATED_AT: { S: new Date().toISOString() },
-                        CURRENT_FUNNEL_ID: { S: applicant.funnel_id },
-                        CURRENT_FUNNEL_TITLE: { S: funnelExists.FUNNEL_TITLE.S },
+                    Item: marshall({
+                        PK: "APPLICANT#" + applicantId,
+                        SK: "APPLICANT#" + applicantId,
+                        TYPE: "Applicant",
+                        APPLICANT_ID: applicantId,
+                        CREATED_AT: new Date().toISOString(),
+                        CURRENT_FUNNEL_ID: applicant.funnel_id,
+                        CURRENT_FUNNEL_TITLE: funnelExists.FUNNEL_TITLE.S,
                         // Without exclamation mark, TS will throw an error ^
                         // We can guarantee that if a funnel exists, it will have a title
-                        CURRENT_STAGE_TITLE: { S: "STAGE_TITLE#" + applicant.stage_title },
-                        EMAIL: { S: applicant.email },
-                        FIRST_NAME: { S: applicant.first_name },
-                        LAST_NAME: { S: applicant.last_name },
-                        FULL_NAME: { S: applicant.first_name + " " + applicant.last_name },
-                        PHONE_NUMBER: { S: applicant.phone_number },
-                    },
-                    TableName: "OpenATS", // TODO parameter store???
+                        CURRENT_STAGE_TITLE: "STAGE_TITLE#" + applicant.stage_title,
+                        EMAIL: applicant.email,
+                        FIRST_NAME: applicant.first_name,
+                        LAST_NAME: applicant.last_name,
+                        FULL_NAME: applicant.first_name + " " + applicant.last_name,
+                        PHONE_NUMBER: applicant.phone_number,
+                    }),
+                    TableName: GeneralConfig_1.DYNAMO_TABLE_NAME,
+                    ReturnValues: "ALL_NEW",
                 };
-                // Add applicant
+                command = new PutItemCommand(params);
                 return [4 /*yield*/, client.send(command)];
             case 4:
-                // Add applicant
-                _b.sent();
-                return [2 /*return*/, {
-                        message: "Applicant created succesfully!",
-                        status: 201,
-                    }];
+                response = _b.sent();
+                return [2 /*return*/, res
+                        .status(201)
+                        .json({ message: "Applicant created succesfully!" })];
             case 5:
                 error_1 = _b.sent();
                 console.error(error_1);
-                return [2 /*return*/, {
-                        message: "ERROR: Unable to create your applicant - " + error_1.message,
-                        status: 500,
-                    }];
+                res.status(error_1.status).json({
+                    message: "ERROR: Unable to create your applicant - " + error_1.message,
+                });
+                return [3 /*break*/, 6];
             case 6: return [3 /*break*/, 8];
             case 7:
                 error_2 = _b.sent();
                 console.error(error_2);
-                return [2 /*return*/, {
-                        message: "An error occurred checking if funnel " + applicant.funnel_id + " exists",
-                        status: 500,
-                    }];
+                res.status(error_2.status).json({
+                    message: "An error occurred checking if funnel " + applicant.funnel_id + " exists",
+                });
+                return [3 /*break*/, 8];
             case 8:
                 res.status(405).json({ message: "Method not allowed" });
                 return [2 /*return*/];
