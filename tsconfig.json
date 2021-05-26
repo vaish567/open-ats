@@ -14,7 +14,7 @@
       "esnext"
     ],
     "allowJs": true,
-    "noEmit": true,
+    "noEmit": false,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": true,

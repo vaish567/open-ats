@@ -1,22 +1,11 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import doesFunnelExist from "../../../utils/doesFunnelExist/doesFunnelExist";
 import doesStageExist from "../../../utils/doesStageExist/doesStageExist";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import { DynamoDB } from "@aws-sdk/client-dynamodb";
 import { nanoid } from "nanoid";
-const idLength = 25;
+
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const { method } = req;
-
-  switch (method) {
-    case "GET":
-      // Get all applicants
-      break;
-
-    default:
-      res.status(405).json({ message: `Method Not Allowed - ${method}` });
-  }
   if (req.method == "POST") {
     const applicant: {
       first_name: string;
@@ -33,10 +22,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         doesStageExist(applicant.funnel_id, applicant.stage_title),
       ]);
 
-      if (!funnelExists || !stageExists) res.status();
-      return res.status(404).json({
-        message: `ERROR: The funnel + stage combination in which you are trying to place this applicant in (Funnel ID: '${applicant.funnel_id}' / Stage Title: '${applicant.stage_title}') does not exist`,
-      });
+      if (!funnelExists || !stageExists)
+        return res.status(404).json({
+          message: `ERROR: The funnel + stage combination in which you are trying to place this applicant in (Funnel ID: '${applicant.funnel_id}' / Stage Title: '${applicant.stage_title}') does not exist`,
+        });
 
       try {
         const applicantId = nanoid(idLength);

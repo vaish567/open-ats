@@ -1,23 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -58,37 +39,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 var doesFunnelExist_1 = __importDefault(require("../../../utils/doesFunnelExist/doesFunnelExist"));
 var doesStageExist_1 = __importDefault(require("../../../utils/doesStageExist/doesStageExist"));
-var GeneralConfig_js_1 = __importDefault(require("../../../../config/GeneralConfig.js"));
-var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var nanoid_1 = require("nanoid");
-var Joi = __importStar(require("joi"));
-var dynamodb = new client_dynamodb_1.DynamoDB(GeneralConfig_js_1.default.DYNAMO_CONFIG);
-var idLength = GeneralConfig_js_1.default.ID_GENERATION_LENGTH;
-var joiConfig = GeneralConfig_js_1.default.JOI_CONFIG;
-var ApplicantSchema = Joi.object({
-    email: Joi.string().email().required(),
-    first_name: Joi.string().required().max(GeneralConfig_js_1.default.FIRST_NAME_MAX_LENGTH),
-    last_name: Joi.string().required().max(GeneralConfig_js_1.default.LAST_NAME_MAX_LENGTH),
-    phone_number: Joi.string()
-        .length(10) // TODO add international support
-        .pattern(/^[0-9]+$/)
-        .required(),
-    funnel_id: Joi.string(),
-    stage_title: Joi.string(),
-}).and("email", "first_name", "last_name", "phone_number", "stage_title", "funnel_id");
-// TODO add applicant types once schema has been laid out
-// Fountain just uses a 'data' attribute and all custom data fields go in there
-// Might be a good idea
-var createApplicant = function (applicant) { return __awaiter(void 0, void 0, void 0, function () {
-    var validation, _a, funnelExists, stageExists, applicantId, params, error_1, error_2;
+var idLength = 25;
+exports.default = (function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var method, applicant, _a, funnelExists, stageExists, applicantId, params, error_1, error_2;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                validation = ApplicantSchema.validate(applicant, joiConfig);
-                if (validation.error)
-                    return [2 /*return*/, { message: "ERROR: " + validation.error.message, status: 400 }];
+                method = req.method;
+                switch (method) {
+                    case "GET":
+                        // Get all applicants
+                        break;
+                    default:
+                        res.status(405).json({ message: "Method Not Allowed - " + method });
+                }
+                if (!(req.method == "POST")) return [3 /*break*/, 8];
+                applicant = req.body;
                 _b.label = 1;
             case 1:
                 _b.trys.push([1, 7, , 8]);
@@ -99,11 +69,10 @@ var createApplicant = function (applicant) { return __awaiter(void 0, void 0, vo
             case 2:
                 _a = _b.sent(), funnelExists = _a[0], stageExists = _a[1];
                 if (!funnelExists || !stageExists)
-                    return [2 /*return*/, {
-                            message: "ERROR: The funnel + stage combination in which you are trying to place this applicant in (Funnel ID: '" + applicant.funnel_id + "' / Stage Title: '" + applicant.stage_title + "') does not exist",
-                            status: 404,
-                        }];
-                _b.label = 3;
+                    res.status();
+                return [2 /*return*/, res.status(404).json({
+                        message: "ERROR: The funnel + stage combination in which you are trying to place this applicant in (Funnel ID: '" + applicant.funnel_id + "' / Stage Title: '" + applicant.stage_title + "') does not exist",
+                    })];
             case 3:
                 _b.trys.push([3, 5, , 6]);
                 applicantId = nanoid_1.nanoid(idLength);
@@ -149,8 +118,9 @@ var createApplicant = function (applicant) { return __awaiter(void 0, void 0, vo
                         message: "An error occurred checking if funnel " + applicant.funnel_id + " exists",
                         status: 500,
                     }];
-            case 8: return [2 /*return*/];
+            case 8:
+                res.status(405).json({ message: "Method not allowed" }); //Method Not Allowed
+                return [2 /*return*/];
         }
     });
-}); };
-exports.default = createApplicant;
+}); });
