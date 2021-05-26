@@ -42,8 +42,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var doesFunnelExist_1 = __importDefault(require("../../../utils/doesFunnelExist/doesFunnelExist"));
 var doesStageExist_1 = __importDefault(require("../../../utils/doesStageExist/doesStageExist"));
 var GeneralConfig_1 = require("../../../config/GeneralConfig");
-var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var nanoid_1 = require("nanoid");
+var _a = require("@aws-sdk/client-dynamodb"), DynamoDBClient = _a.DynamoDBClient, PutItemCommand = _a.PutItemCommand;
+var client = new DynamoDBClient(GeneralConfig_1.DYNAMO_CONFIG);
+var command = new PutItemCommand({});
 exports.default = (function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var applicant, _a, funnelExists, stageExists, applicantId, params, error_1, error_2;
     return __generator(this, function (_b) {
@@ -88,8 +90,10 @@ exports.default = (function (req, res) { return __awaiter(void 0, void 0, void 0
                     },
                     TableName: "OpenATS", // TODO parameter store???
                 };
-                return [4 /*yield*/, client_dynamodb_1.DynamoDB.putItem(params)];
+                // Add applicant
+                return [4 /*yield*/, client.send(command)];
             case 4:
+                // Add applicant
                 _b.sent();
                 return [2 /*return*/, {
                         message: "Applicant created succesfully!",
@@ -111,7 +115,7 @@ exports.default = (function (req, res) { return __awaiter(void 0, void 0, void 0
                         status: 500,
                     }];
             case 8:
-                res.status(405).json({ message: "Method not allowed" }); //Method Not Allowed
+                res.status(405).json({ message: "Method not allowed" });
                 return [2 /*return*/];
         }
     });

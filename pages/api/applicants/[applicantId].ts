@@ -1,9 +1,12 @@
 import doesFunnelExist from "../../../utils/doesFunnelExist/doesFunnelExist";
 import doesStageExist from "../../../utils/doesStageExist/doesStageExist";
+import { ID_LENGTH, DYNAMO_CONFIG } from "../../../config/GeneralConfig";
 import { NextApiRequest, NextApiResponse } from "next";
-import { ID_LENGTH } from "../../../config/GeneralConfig";
-import { DynamoDB } from "@aws-sdk/client-dynamodb";
 import { nanoid } from "nanoid";
+
+const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
+const client = new DynamoDBClient(DYNAMO_CONFIG);
+const command = new PutItemCommand({});
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method == "POST") {
@@ -49,7 +52,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           },
           TableName: "OpenATS", // TODO parameter store???
         };
-        await DynamoDB.putItem(params);
+
+        // Add applicant
+        await client.send(command);
         return {
           message: "Applicant created succesfully!",
           status: 201,
@@ -70,6 +75,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
   }
 
-  res.status(405).json({ message: "Method not allowed" }); //Method Not Allowed
+  res.status(405).json({ message: "Method not allowed" });
   return;
 };

@@ -54,23 +54,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var doesFunnelExist_1 = __importDefault(require("../../../utils/doesFunnelExist/doesFunnelExist"));
-var doesStageExist_1 = __importDefault(require("../../../utils/doesStageExist/doesStageExist"));
-var GeneralConfig_js_1 = __importDefault(require("../../../../config/GeneralConfig.js"));
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
-var nanoid_1 = require("nanoid");
 var Joi = __importStar(require("joi"));
-var dynamodb = new client_dynamodb_1.DynamoDB(GeneralConfig_js_1.default.DYNAMO_CONFIG);
-var idLength = GeneralConfig_js_1.default.ID_GENERATION_LENGTH;
-var joiConfig = GeneralConfig_js_1.default.JOI_CONFIG;
+var dynamodb = new client_dynamodb_1.DynamoDB(Config.DYNAMO_CONFIG);
+var ID_LENGTH = .ID_LENGTH, FIRST_NAME_MAX_LENGTH = .FIRST_NAME_MAX_LENGTH, LAST_NAME_MAX_LENGTH = .LAST_NAME_MAX_LENGTH;
+var joiConfig = Config.JOI_CONFIG;
 var ApplicantSchema = Joi.object({
     email: Joi.string().email().required(),
-    first_name: Joi.string().required().max(GeneralConfig_js_1.default.FIRST_NAME_MAX_LENGTH),
-    last_name: Joi.string().required().max(GeneralConfig_js_1.default.LAST_NAME_MAX_LENGTH),
+    first_name: Joi.string().required().max(FIRST_NAME_MAX_LENGTH),
+    last_name: Joi.string().required().max(LAST_NAME_MAX_LENGTH),
     phone_number: Joi.string()
         .length(10) // TODO add international support
         .pattern(/^[0-9]+$/)
@@ -82,75 +75,12 @@ var ApplicantSchema = Joi.object({
 // Fountain just uses a 'data' attribute and all custom data fields go in there
 // Might be a good idea
 var createApplicant = function (applicant) { return __awaiter(void 0, void 0, void 0, function () {
-    var validation, _a, funnelExists, stageExists, applicantId, params, error_1, error_2;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
-            case 0:
-                validation = ApplicantSchema.validate(applicant, joiConfig);
-                if (validation.error)
-                    return [2 /*return*/, { message: "ERROR: " + validation.error.message, status: 400 }];
-                _b.label = 1;
-            case 1:
-                _b.trys.push([1, 7, , 8]);
-                return [4 /*yield*/, Promise.all([
-                        doesFunnelExist_1.default(applicant.funnel_id),
-                        doesStageExist_1.default(applicant.funnel_id, applicant.stage_title),
-                    ])];
-            case 2:
-                _a = _b.sent(), funnelExists = _a[0], stageExists = _a[1];
-                if (!funnelExists || !stageExists)
-                    return [2 /*return*/, {
-                            message: "ERROR: The funnel + stage combination in which you are trying to place this applicant in (Funnel ID: '" + applicant.funnel_id + "' / Stage Title: '" + applicant.stage_title + "') does not exist",
-                            status: 404,
-                        }];
-                _b.label = 3;
-            case 3:
-                _b.trys.push([3, 5, , 6]);
-                applicantId = nanoid_1.nanoid(idLength);
-                params = {
-                    Item: {
-                        PK: { S: "APPLICANT#" + applicantId },
-                        SK: { S: "APPLICANT#" + applicantId },
-                        TYPE: { S: "Applicant" },
-                        APPLICANT_ID: { S: applicantId },
-                        CREATED_AT: { S: new Date().toISOString() },
-                        CURRENT_FUNNEL_ID: { S: applicant.funnel_id },
-                        CURRENT_FUNNEL_TITLE: { S: funnelExists.FUNNEL_TITLE.S },
-                        // Without exclamation mark, TS will throw an error ^
-                        // We can guarantee that if a funnel exists, it will have a title
-                        CURRENT_STAGE_TITLE: { S: "STAGE_TITLE#" + applicant.stage_title },
-                        EMAIL: { S: applicant.email },
-                        FIRST_NAME: { S: applicant.first_name },
-                        LAST_NAME: { S: applicant.last_name },
-                        FULL_NAME: { S: applicant.first_name + " " + applicant.last_name },
-                        PHONE_NUMBER: { S: applicant.phone_number },
-                    },
-                    TableName: "OpenATS", // TODO parameter store???
-                };
-                return [4 /*yield*/, dynamodb.putItem(params)];
-            case 4:
-                _b.sent();
-                return [2 /*return*/, {
-                        message: "Applicant created succesfully!",
-                        status: 201,
-                    }];
-            case 5:
-                error_1 = _b.sent();
-                console.error(error_1);
-                return [2 /*return*/, {
-                        message: "ERROR: Unable to create your applicant - " + error_1.message,
-                        status: 500,
-                    }];
-            case 6: return [3 /*break*/, 8];
-            case 7:
-                error_2 = _b.sent();
-                console.error(error_2);
-                return [2 /*return*/, {
-                        message: "An error occurred checking if funnel " + applicant.funnel_id + " exists",
-                        status: 500,
-                    }];
-            case 8: return [2 /*return*/];
-        }
+    var validation;
+    return __generator(this, function (_a) {
+        validation = ApplicantSchema.validate(applicant, joiConfig);
+        if (validation.error)
+            return [2 /*return*/, { message: "ERROR: " + validation.error.message, status: 400 }];
+        return [2 /*return*/];
     });
 }); };
 exports.default = createApplicant;

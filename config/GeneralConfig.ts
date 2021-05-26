@@ -1,8 +1,9 @@
 const ID_LENGTH = 35; // Length of IDs
 const STAGE_DESCRIPTION_MAX_LENGTH = 250;
 const STAGE_TITLE_LENGTH = 250;
-const DYNAMO_CONFIG = {};
-
+const DYNAMO_CONFIG = { region: "us-east-1" };
+const FIRST_NAME_MAX_LENGTH = 50;
+const LAST_NAME_MAX_LENGTH = 50;
 export {
   ID_LENGTH,
   STAGE_DESCRIPTION_MAX_LENGTH,
