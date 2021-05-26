@@ -41,6 +41,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var doesFunnelExist_1 = __importDefault(require("../../../utils/doesFunnelExist/doesFunnelExist"));
 var doesStageExist_1 = __importDefault(require("../../../utils/doesStageExist/doesStageExist"));
+var GeneralConfig_1 = require("../../../config/GeneralConfig");
+var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var nanoid_1 = require("nanoid");
 exports.default = (function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var applicant, _a, funnelExists, stageExists, applicantId, params, error_1, error_2;
@@ -65,7 +67,7 @@ exports.default = (function (req, res) { return __awaiter(void 0, void 0, void 0
                 _b.label = 3;
             case 3:
                 _b.trys.push([3, 5, , 6]);
-                applicantId = nanoid_1.nanoid(idLength);
+                applicantId = nanoid_1.nanoid(GeneralConfig_1.ID_LENGTH);
                 params = {
                     Item: {
                         PK: { S: "APPLICANT#" + applicantId },
@@ -86,7 +88,7 @@ exports.default = (function (req, res) { return __awaiter(void 0, void 0, void 0
                     },
                     TableName: "OpenATS", // TODO parameter store???
                 };
-                return [4 /*yield*/, dynamodb.putItem(params)];
+                return [4 /*yield*/, client_dynamodb_1.DynamoDB.putItem(params)];
             case 4:
                 _b.sent();
                 return [2 /*return*/, {

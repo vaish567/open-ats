@@ -1,7 +1,7 @@
 import doesFunnelExist from "../../../utils/doesFunnelExist/doesFunnelExist";
 import doesStageExist from "../../../utils/doesStageExist/doesStageExist";
 import { NextApiRequest, NextApiResponse } from "next";
-
+import { ID_LENGTH } from "../../../config/GeneralConfig";
 import { DynamoDB } from "@aws-sdk/client-dynamodb";
 import { nanoid } from "nanoid";
 
@@ -28,7 +28,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         });
 
       try {
-        const applicantId = nanoid(idLength);
+        const applicantId = nanoid(ID_LENGTH);
         const params = {
           Item: {
             PK: { S: `APPLICANT#${applicantId}` },
@@ -49,7 +49,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           },
           TableName: "OpenATS", // TODO parameter store???
         };
-        await dynamodb.putItem(params);
+        await DynamoDB.putItem(params);
         return {
           message: "Applicant created succesfully!",
           status: 201,
