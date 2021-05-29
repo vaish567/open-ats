@@ -88,16 +88,15 @@ describe("/api/applicants", function () {
                     ];
                     req = node_mocks_http_1.createRequest({
                         method: "GET",
-                        body: {
-                            applicantList: applicantList,
-                        },
                     });
                     res = node_mocks_http_1.createResponse();
                     return [4 /*yield*/, index_1.default(req, res)];
                 case 1:
                     _a.sent();
-                    expect(res.status).toBe(200);
-                    expect(res._getJSONData()).toMatchObject({ applicants: Array });
+                    expect(res._getStatusCode()).toBe(200);
+                    expect(res._getJSONData()).toEqual(expect.objectContaining({
+                        applicants: expect.any(Array), // Array of applicants
+                    }));
                     return [2 /*return*/];
             }
         });

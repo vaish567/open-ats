@@ -47,15 +47,28 @@ exports.default = (function (req, res) { return __awaiter(void 0, void 0, void 0
         switch (method) {
             case "POST":
                 // Create an applicant
-                return [2 /*return*/, res
-                        .status(201)
-                        .json({
+                return [2 /*return*/, res.status(201).json({
                         message: "Applicant succesfully created!",
                         applicant: req.body.applicant,
                     })];
-                break;
+            case "GET":
+                return [2 /*return*/, res.status(200).json({
+                        applicants: [
+                            // Mock data // TODO remove
+                            {
+                                name: "Jose Valerio",
+                                position: "Developer",
+                            },
+                            {
+                                name: "Vaishnav Parte",
+                                position: "Developer",
+                            },
+                        ],
+                    })];
             default:
-                res.status(405).json({ message: "Method Not Allowed - " + method });
+                return [2 /*return*/, res
+                        .status(405)
+                        .json({ message: "Method Not Allowed - " + method })];
         }
         return [2 /*return*/];
     });

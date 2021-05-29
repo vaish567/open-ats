@@ -1,4 +1,4 @@
-import { createRequest, createResponse } from "node-mocks-http";
+import { createRequest, createResponse, RequestMethod } from "node-mocks-http";
 import { NextApiRequest, NextApiResponse } from "next";
 import applicants from "../pages/api/applicants/index";
 
@@ -39,16 +39,16 @@ describe("/api/applicants", () => {
     ];
     const req = createRequest<NextApiRequest>({
       method: "GET",
-      body: {
-        applicantList,
-      },
     });
 
     const res = createResponse<NextApiResponse>();
-
     await applicants(req, res);
 
-    expect(res.status).toBe(200);
-    expect(res._getJSONData()).toMatchObject({ applicants: Array });
+    expect(res._getStatusCode()).toBe(200);
+    expect(res._getJSONData()).toEqual(
+      expect.objectContaining({
+        applicants: expect.any(Array), // Array of applicants
+      })
+    );
   });
 });
