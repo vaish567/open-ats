@@ -35,18 +35,39 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-var getAllByType_1 = require("./getAllByType");
-var getAll = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var x;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, getAllByType_1.default("Applicant")];
-            case 1:
-                x = _a.sent();
-                console.log(x);
-                return [2 /*return*/];
-        }
-    });
-}); };
-getAll();
+var node_mocks_http_1 = require("node-mocks-http");
+var index_1 = __importDefault(require("../pages/api/applicants/index"));
+describe("/api/applicants", function () {
+    test("Creates an applicant with the specified info", function () { return __awaiter(void 0, void 0, void 0, function () {
+        var applicant, req, res;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    applicant = {
+                        name: "Jose Valerio",
+                        position: "Developer",
+                    };
+                    req = node_mocks_http_1.createRequest({
+                        method: "POST",
+                        body: {
+                            applicant: applicant,
+                        },
+                    });
+                    res = node_mocks_http_1.createResponse();
+                    return [4 /*yield*/, index_1.default(req, res)];
+                case 1:
+                    _a.sent();
+                    expect(res._getStatusCode()).toBe(201);
+                    expect(res._getJSONData()).toEqual({
+                        message: "Applicant succesfully created!",
+                        applicant: applicant,
+                    });
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+});

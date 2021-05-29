@@ -1,4 +1,5 @@
 "use strict";
+// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -36,17 +37,26 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var doesStageExist_1 = require("./doesStageExist");
-var check = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var response;
+// const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
+// const { marshall, unmarshall } = require("@aws-sdk/util-dynamodb"); // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/modules/_aws_sdk_util_dynamodb.html
+// const nanoid = require("nanoid");
+exports.default = (function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var method;
     return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, doesStageExist_1.default("vlXTvxE9xOYpuNZfXDZuEQHFV", "Active")];
-            case 1:
-                response = _a.sent();
-                console.log(response);
-                return [2 /*return*/];
+        method = req.method;
+        switch (method) {
+            case "POST":
+                // Create an applicant
+                return [2 /*return*/, res
+                        .status(201)
+                        .json({
+                        message: "Applicant succesfully created!",
+                        applicant: req.body.applicant,
+                    })];
+                break;
+            default:
+                res.status(405).json({ message: "Method Not Allowed - " + method });
         }
+        return [2 /*return*/];
     });
-}); };
-check();
+}); });
