@@ -71,21 +71,10 @@ describe("/api/applicants", function () {
         });
     }); });
     test("Gets all applicants", function () { return __awaiter(void 0, void 0, void 0, function () {
-        var applicantList, req, res;
+        var req, res;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    applicantList = [
-                        // Mock data
-                        {
-                            name: "Jose Valerio",
-                            position: "Developer",
-                        },
-                        {
-                            name: "Vaishnav Parte",
-                            position: "Developer",
-                        },
-                    ];
                     req = node_mocks_http_1.createRequest({
                         method: "GET",
                     });

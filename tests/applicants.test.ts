@@ -26,17 +26,6 @@ describe("/api/applicants", () => {
   });
 
   test("Gets all applicants", async () => {
-    const applicantList = [
-      // Mock data
-      {
-        name: "Jose Valerio",
-        position: "Developer",
-      },
-      {
-        name: "Vaishnav Parte",
-        position: "Developer",
-      },
-    ];
     const req = createRequest<NextApiRequest>({
       method: "GET",
     });
