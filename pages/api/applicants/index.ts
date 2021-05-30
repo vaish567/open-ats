@@ -16,6 +16,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         applicant: {
           ...req.body.applicant,
           id: nanoid(APPLICANT_ID_LENGTH),
+          created_at: new Date().toISOString(),
         },
       });
 

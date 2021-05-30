@@ -25,6 +25,7 @@ describe("/api/applicants", () => {
         name: expect.any(String),
         position: expect.any(String),
         id: expect.any(String),
+        created_at: expect.any(String), // TODO can this be clearer to expect ISO?
       },
     });
   });
