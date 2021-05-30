@@ -39,3 +39,5 @@ yarn-error.log*
 
 # JS files, backend
 /config/*.js
+/pages/api/applicants/*.js
+/tests/*.js
