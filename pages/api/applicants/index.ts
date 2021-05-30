@@ -4,7 +4,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { APPLICANT_ID_LENGTH } from "../../../config/GeneralConfig";
 // const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
 // const { marshall, unmarshall } = require("@aws-sdk/util-dynamodb"); // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/modules/_aws_sdk_util_dynamodb.html
-const nanoid = require("nanoid");
+import { nanoid } from "nanoid";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
@@ -13,7 +13,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       // Create an applicant
       return res.status(201).json({
         message: "Applicant succesfully created!",
-        applicant: req.body.applicant,
+        applicant: {
+          ...req.body.applicant,
+          id: nanoid(APPLICANT_ID_LENGTH),
+        },
       });
 
     case "GET":
