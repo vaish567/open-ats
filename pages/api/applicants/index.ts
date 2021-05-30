@@ -20,11 +20,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         },
       });
 
-    // TODO TEST
     case "GET":
       return res.status(200).json({
         applicants: [
-          // Mock data // TODO remove
+          // Mock data // TODO Remove mock data, make DynamoDB Call
           {
             name: "Jose Valerio",
             position: "Developer",

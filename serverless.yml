@@ -2,3 +2,4 @@ openATS:
   component: "@sls-next/serverless-component"
   inputs:
     domain: "openats.net"
+    # TODO Add DynamoDB Table creation here
