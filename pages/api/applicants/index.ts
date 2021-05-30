@@ -8,18 +8,32 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
-
   switch (method) {
     case "POST":
       // Create an applicant
-      return res
-        .status(201)
-        .json({
-          message: "Applicant succesfully created!",
-          applicant: req.body.applicant,
-        });
-      break;
+      return res.status(201).json({
+        message: "Applicant succesfully created!",
+        applicant: req.body.applicant,
+      });
+
+    case "GET":
+      return res.status(200).json({
+        applicants: [
+          // Mock data // TODO remove
+          {
+            name: "Jose Valerio",
+            position: "Developer",
+          },
+          {
+            name: "Vaishnav Parte",
+            position: "Developer",
+          },
+        ],
+      });
+
     default:
-      res.status(405).json({ message: `Method Not Allowed - ${method}` });
+      return res
+        .status(405)
+        .json({ message: `Method Not Allowed - ${method}` });
   }
 };

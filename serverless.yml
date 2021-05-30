@@ -1,5 +1,4 @@
 openATS:
   component: "@sls-next/serverless-component"
-
-inputs:
-  domain: "openats.com"
+  inputs:
+    domain: "openats.net"
