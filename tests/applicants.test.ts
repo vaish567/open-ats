@@ -21,7 +21,11 @@ describe("/api/applicants", () => {
     expect(res._getStatusCode()).toBe(201);
     expect(res._getJSONData()).toEqual({
       message: "Applicant succesfully created!",
-      applicant: applicant,
+      applicant: {
+        name: expect.any(String),
+        position: expect.any(String),
+        id: expect.any(String),
+      },
     });
   });
 
