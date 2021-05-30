@@ -1,8 +1,8 @@
 import * as Config from "../config/GeneralConfig";
 
 describe("Configuraton", () => {
-  test("Checks if ID_LENGTH is greater than or equal to 20", () => {
-    expect(Config.ID_LENGTH).toBeGreaterThanOrEqual(20);
+  test("Checks if APPLICANT_ID_LENGTH is greater than or equal to 20", () => {
+    expect(Config.APPLICANT_ID_LENGTH).toBeGreaterThanOrEqual(20);
   });
 
   test("Checks if STAGE_DESCRIPTION_MAX_LENGTH is greater than 0", () => {
