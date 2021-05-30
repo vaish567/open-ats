@@ -20,6 +20,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         },
       });
 
+    // TODO TEST
     case "GET":
       return res.status(200).json({
         applicants: [
